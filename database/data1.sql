@@ -1,7 +1,7 @@
 -- Insert Data into Users Table
 INSERT INTO Users (full_name, roll_no, email, phone_number, password_hash, role, hostel, branch, year)
 VALUES
-('Amit Sharma', 210101, 'amit.sharma@example.com', '9876543210', 'pass123', 'Student', 'A', 'COE', '2'),
+('Amit Sharma', 210101, 'amit.sharma@example.com', '9876543210', 'pass123', 'Student', 'M', 'COE', '2'),
 ('Pooja Verma', 210102, 'pooja.verma@example.com', '9876543211', 'pass124', 'Student', 'B', 'ENC', '1'),
 ('Rahul Mehta', 210103, 'rahul.mehta@example.com', '9876543212', 'pass125', 'Student', 'C', 'COBS', '3'),
 ('Sneha Kapoor', 210104, 'sneha.kapoor@example.com', '9876543213', 'pass126', 'Staff', 'D', 'EEC', '4'),
