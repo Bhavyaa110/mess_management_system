@@ -1,5 +1,9 @@
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
+
 from flask import Blueprint, request, jsonify
-from models import execute_query
+from ..models import execute_query
 import bcrypt
 
 auth = Blueprint('auth', __name__)

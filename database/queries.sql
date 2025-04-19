@@ -18,7 +18,7 @@ JOIN Users u ON a.user_id = u.user_id
 JOIN Meals m ON a.meal_id = m.meal_id
 WHERE m.meal_date = CURDATE();
 
---return number of students attending 
+-- return number of students attending 
 SELECT COUNT(DISTINCT t.user_id) AS total_attending_students
 FROM Tickets t
 JOIN Users u ON t.user_id = u.user_id
