@@ -1,8 +1,8 @@
-CREATE DATABASE MessManagementSystem
+CREATE DATABASE mess_management_system
     DEFAULT CHARACTER SET = 'utf8mb4';
--- Use the newly created database
-USE MessManagementSystem;
--- Users Table
+
+use mess_management_system;
+
 CREATE TABLE Users (
     user_id INT AUTO_INCREMENT PRIMARY KEY,
     full_name VARCHAR(100) NOT NULL,
@@ -44,4 +44,113 @@ CREATE TABLE Tickets (
     FOREIGN KEY (user_id) REFERENCES Users(user_id),
     FOREIGN KEY (meal_id) REFERENCES Meals(meal_id)
 );
+
+INSERT INTO Users
+  (full_name, roll_no, email, phone_number, password_hash, role, hostel, branch, year)
+VALUES
+  ('Devansh Mehra',     221001, 'devansh.mehra@nitk.edu.in',    '9998881001', MD5('Hello@123'), 'Student', 'M', 'COPC', '2'),
+  ('Tanya Aggarwal',    221002, 'tanya.aggarwal@nitk.edu.in',   '9998881002', MD5('Tanya#456'), 'Student', 'N', 'COE',  '3'),
+  ('Yash Thakur',       221003, 'yash.thakur@nitk.edu.in',      '9998881003', MD5('Yash789!'),  'Student', 'L', 'RAI',  '1'),
+  ('Meera Iyer',        221004, 'meera.iyer@nitk.edu.in',       '9998881004', MD5('Meera@321'), 'Student', 'PG', 'EVD','4'),
+  ('Arjun Bhatt',       221005, 'arjun.bhatt@nitk.edu.in',      '9998881005', MD5('Arjun$999'), 'Student', 'FRF', 'ENC','2'),
+  ('Simran Kaur',       221006, 'simran.kaur@nitk.edu.in',      '9998881006', MD5('Simran2025'),'Student', 'FRG', 'CIE','3'),
+  ('Aniket Das',        221007, 'aniket.das@nitk.edu.in',       '9998881007', MD5('Das@pass1'), 'Student', 'Q', 'ELE',  '1'),
+  ('Nidhi Bansal',      221008, 'nidhi.bansal@nitk.edu.in',     '9998881008', MD5('Bansal@456'),'Student', 'H', 'EIC',  '4'),
+  ('Saurav Chauhan',    521001, 'saurav.chauhan@nitk.edu.in',   '9998881009', MD5('Staff@2025'),'Staff',   'G', 'CCA',  NULL),
+  ('Priya Sehgal',      921001, 'priya.sehgal@nitk.edu.in',     '9998881010', MD5('Admin#2025'),'Admin',   'K', 'CCA',  NULL);
+
+-- Insert 10 users into Users table
+INSERT INTO Users
+  (full_name, roll_no, email, phone_number, password_hash, role, hostel, branch, year)
+VALUES
+  ('Aarav Sharma',    201001, 'aarav.sharma20@nitk.edu.in',   '9876500123', MD5('Pass@123'), 'Student', 'A', 'COSE', '2'),
+  ('Ishita Patel',    201002, 'ishita.patel20@nitk.edu.in',   '9876500456', MD5('Qwerty!1'), 'Student', 'B', 'ECE',  '2'),
+  ('Rahul Verma',     201003, 'rahul.verma20@nitk.edu.in',    '9876500789', MD5('Welcome#2'), 'Student', 'C', 'MEC', '3'),
+  ('Sneha Nair',      201004, 'sneha.nair20@nitk.edu.in',     '9876500111', MD5('Sunshine3'), 'Student', 'D', 'CHE',  '1'),
+  ('Vikram Singh',    201005, 'vikram.singh20@nitk.edu.in',   '9876500222', MD5('Autumn$4'), 'Student', 'E', 'BT',   '4'),
+  ('Pooja Rao',       201006, 'pooja.rao20@nitk.edu.in',      '9876500333', MD5('Winter%5'), 'Student', 'G', 'EEC',  '3'),
+  ('Manish Kulkarni', 201007, 'manish.kulkarni20@nitk.edu.in','9876500444', MD5('Spring^6'), 'Student', 'H', 'MEE',  '1'),
+  ('Kavya Menon',     201008, 'kavya.menon20@nitk.edu.in',    '9876500555', MD5('Galaxy*7'), 'Student', 'I', 'MEC',  '2'),
+  -- one Staff member
+  ('Ramesh Khanna',   500101, 'ramesh.khanna@nitk.edu.in',   '9876500666', MD5('Staff!2025'),'Staff',   'J', 'CCA',  NULL),
+  -- one Admin account
+  ('Neha Desai',      900901, 'neha.desai@nitk.edu.in',      '9876500777', MD5('Admin#2025'),'Admin',   'K', 'CCA',  NULL);
+
+-- Insert Data into Meals Table
+INSERT INTO Meals (meal_type, meal_date, menu)
+VALUES
+('Breakfast', '2025-03-27', 'Idli, Sambhar, Chutney'),
+('Lunch', '2025-03-27', 'Paneer Butter Masala, Naan, Rice'),
+('Dinner', '2025-03-27', 'Rajma, Rice, Roti'),
+('Breakfast', '2025-03-28', 'Aloo Paratha, Curd, Pickle'),
+('Lunch', '2025-03-28', 'Chole Bhature, Salad'),
+('Dinner', '2025-03-28', 'Kadhi Pakora, Rice, Chapati'),
+('Breakfast', '2025-03-29', 'Poha, Jalebi, Tea'),
+('Lunch', '2025-03-29', 'Veg Pulao, Raita, Papad'),
+('Dinner', '2025-03-29', 'Dal Makhani, Rice, Naan'),
+('Breakfast', '2025-03-30', 'Upma, Coconut Chutney');
+
+
+-- Insert sample data into Tickets
+INSERT INTO Tickets (user_id, meal_id, status, purchase_date)
+VALUES
+  (1,  1, 'Reserved',  '2025-03-27 07:50:00'),
+  (2,  1, 'Cancelled', '2025-03-27 08:10:00'),
+  (3,  2, 'Reserved',  '2025-03-27 12:30:00'),
+  (4,  2, 'Pending',   '2025-03-27 12:45:00'),
+  (5,  3, 'Reserved',  '2025-03-27 19:00:00'),
+  (6,  4, 'Cancelled', '2025-03-28 07:55:00'),
+  (7,  5, 'Reserved',  '2025-03-28 12:15:00'),
+  (8,  6, 'Pending',   '2025-03-28 12:40:00'),
+  (9,  7, 'Reserved',  '2025-03-29 08:05:00'),
+  (10, 8, 'Reserved',  '2025-03-29 12:20:00');
+
+
+
+-- Insert Data into Attendance Table
+INSERT INTO Attendance (user_id, meal_id, scan_time)
+VALUES
+(1, 1, '2025-03-27 08:30:00'),
+(2, 1, NULL),
+(3, 2, '2025-03-27 13:00:00'),
+(4, 2, NULL),
+(5, 3, '2025-03-27 19:30:00'),
+(6, 4, NULL),
+(7, 5, '2025-03-28 08:15:00'),
+(8, 6, NULL),
+(9, 7, '2025-03-29 09:00:00'),
+(10, 8, '2025-03-29 13:20:00');
+
+select * from users, meals, tickets, attendance;
+
+-- View today's meals
+SELECT * FROM Meals WHERE meal_date = CURDATE();
+
+-- Get all reserved tickets for today:
+SELECT u.full_name, m.meal_type, t.status, t.purchase_date
+FROM Tickets t
+JOIN Users u ON t.user_id = u.user_id
+JOIN Meals m ON t.meal_id = m.meal_id
+WHERE m.meal_date = CURDATE() AND t.status = 'Reserved';
+
+-- Generate attendance report:
+SELECT u.full_name, m.meal_type, a.scan_time
+FROM Attendance a
+JOIN Users u ON a.user_id = u.user_id
+JOIN Meals m ON a.meal_id = m.meal_id
+WHERE m.meal_date = CURDATE();
+
+-- Prevent duplicate reservations:
+CREATE TRIGGER prevent_duplicate_reservations
+BEFORE INSERT ON Tickets
+FOR EACH ROW
+BEGIN
+  IF EXISTS (
+    SELECT 1 FROM Tickets 
+    WHERE user_id = NEW.user_id AND meal_id = NEW.meal_id
+  ) THEN
+    SIGNAL SQLSTATE '45000'
+    SET MESSAGE_TEXT = 'User has already reserved for this meal';
+  END IF;
+END;
 
