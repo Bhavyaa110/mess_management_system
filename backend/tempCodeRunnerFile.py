@@ -1,14 +1,9 @@
-from db_config import get_db_connection
+from flask import Flask
 
-def execute_query(query, args=None, fetch=False):
-    conn = get_db_connection()
-    cursor = conn.cursor()
-    cursor.execute(query, args)
-    if fetch:
-        result = cursor.fetchall()
-        conn.close()
-        return result
-    else:
-        conn.commit()
-        conn.close()
-        return True
+def create_app():
+    app = Flask(__name__)
+
+    from .routes.auth import auth
+    app.register_blueprint(auth, url_prefix='/auth')
+
+    return app

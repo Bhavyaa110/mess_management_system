@@ -1,4 +1,5 @@
 from db_config import get_db_connection
+from backend.db_config import get_db_connection
 
 def execute_query(query, args=None, fetch=False):
     conn = get_db_connection()

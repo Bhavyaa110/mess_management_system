@@ -1,9 +1,5 @@
-import sys
-import os
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
-
 from flask import Blueprint, request, jsonify
-from ..models import execute_query
+from backend.db_config import get_db_connection
 import bcrypt
 
 auth = Blueprint('auth', __name__)
@@ -17,7 +13,7 @@ def register():
     try:
         execute_query(query, (data['full_name'], data['roll_no'], data['email'],
                               data['phone_number'], hashed_pw, data['role'], data['hostel']))
-        return jsonify({'message': 'User registered successfully'}), 201
+        return jsonify({'message': 'User  registered successfully'}), 201
     except Exception as e:
         return jsonify({'error': str(e)}), 400
 
