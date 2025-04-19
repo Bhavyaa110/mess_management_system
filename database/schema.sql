@@ -32,6 +32,13 @@ CREATE TABLE Attendance (
     FOREIGN KEY (user_id) REFERENCES Users(user_id),
     FOREIGN KEY (meal_id) REFERENCES Meals(meal_id)
 );
+
+ALTER TABLE Attendance
+MODIFY scan_time TIMESTAMP NULL DEFAULT NULL;
+
+ALTER TABLE Attendance
+ADD COLUMN status ENUM('present', 'absent') DEFAULT 'absent';
+
 -- Tickets Table
 CREATE TABLE Tickets (
     ticket_id INT AUTO_INCREMENT PRIMARY KEY,
@@ -42,6 +49,18 @@ CREATE TABLE Tickets (
     FOREIGN KEY (user_id) REFERENCES Users(user_id),
     FOREIGN KEY (meal_id) REFERENCES Meals(meal_id)
 );
+
+CREATE TABLE Meal_Timings (
+    meal_type VARCHAR(20) PRIMARY KEY,
+    start_time TIME NOT NULL,
+    end_time TIME NOT NULL
+);
+
+INSERT INTO Meal_Timings (meal_type, start_time, end_time) VALUES
+('Breakfast', '07:00:00', '09:00:00'),
+('Lunch',     '12:00:00', '14:00:00'),
+('Dinner',    '19:00:00', '21:00:00');
+
 
 INSERT INTO Users
   (full_name, roll_no, email, phone_number, password_hash, role, hostel, branch, year)
@@ -118,37 +137,3 @@ VALUES
 (8, 6, NULL),
 (9, 7, '2025-03-29 09:00:00'),
 (10, 8, '2025-03-29 13:20:00');
-
-select * from users, meals, tickets, attendance;
-
--- View today's meals
-SELECT * FROM Meals WHERE meal_date = CURDATE();
-
--- Get all reserved tickets for today:
-SELECT u.full_name, m.meal_type, t.status, t.purchase_date
-FROM Tickets t
-JOIN Users u ON t.user_id = u.user_id
-JOIN Meals m ON t.meal_id = m.meal_id
-WHERE m.meal_date = CURDATE() AND t.status = 'Reserved';
-
--- Generate attendance report:
-SELECT u.full_name, m.meal_type, a.scan_time
-FROM Attendance a
-JOIN Users u ON a.user_id = u.user_id
-JOIN Meals m ON a.meal_id = m.meal_id
-WHERE m.meal_date = CURDATE();
-
--- Prevent duplicate reservations:
-CREATE TRIGGER prevent_duplicate_reservations
-BEFORE INSERT ON Tickets
-FOR EACH ROW
-BEGIN
-  IF EXISTS (
-    SELECT 1 FROM Tickets 
-    WHERE user_id = NEW.user_id AND meal_id = NEW.meal_id
-  ) THEN
-    SIGNAL SQLSTATE '45000'
-    SET MESSAGE_TEXT = 'User has already reserved for this meal';
-  END IF;
-END;
-

@@ -42,35 +42,6 @@ def get_todays_attendance():
     conn.close()
     return jsonify(results), 200
 
-# Route: Mark attendance for a user for a meal
-@attendance_bp.route('/attendance/mark', methods=['POST'])
-def mark_attendance():
-    data = request.json
-    user_id = data.get('user_id')
-    meal_id = data.get('meal_id')
-    
-    if not user_id or not meal_id:
-        return jsonify({'error': 'Missing user_id or meal_id'}), 400
-    
-    conn = get_db_connection()
-    cursor = conn.cursor()
-    
-    try:
-        # Insert scan time (current timestamp)
-        cursor.execute("""
-            INSERT INTO Attendance (user_id, meal_id, scan_time)
-            VALUES (%s, %s, NOW())
-        """, (user_id, meal_id))
-        conn.commit()
-        response = {'message': 'Attendance marked successfully'}
-    except Exception as e:
-        conn.rollback()
-        response = {'error': str(e)}
-    
-    cursor.close()
-    conn.close()
-    return jsonify(response)
-
 # Route: Get attendance by user_id
 @attendance_bp.route('/attendance/user/<int:user_id>', methods=['GET'])
 def get_user_attendance(user_id):

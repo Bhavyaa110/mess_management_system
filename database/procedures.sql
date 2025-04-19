@@ -1,13 +1,13 @@
-use mess_management_system
+USE mess_management_system;
 
 DELIMITER //
 
-CREATE PROCEDURE CancelMeal(IN p_user_id INT, IN p_meal_id INT)
+CREATE PROCEDURE CancelMeals(IN p_user_id INT, IN p_meal_id INT)
 BEGIN
   DECLARE meal_time TIME;
 
-  SELECT start_time INTO meal_time
-  FROM MealTimings mt
+  SELECT mt.start_time INTO meal_time
+  FROM Meal_Timings mt
   JOIN Meals m ON m.meal_type = mt.meal_type
   WHERE m.meal_id = p_meal_id;
 
@@ -22,21 +22,6 @@ END;
 //
 
 DELIMITER ;
-
-
--- Prevent duplicate reservations:
-CREATE TRIGGER prevent_duplicate_reservations
-BEFORE INSERT ON Tickets
-FOR EACH ROW
-BEGIN
-  IF EXISTS (
-    SELECT 1 FROM Tickets 
-    WHERE user_id = NEW.user_id AND meal_id = NEW.meal_id
-  ) THEN
-    SIGNAL SQLSTATE '45000'
-    SET MESSAGE_TEXT = 'User has already reserved for this meal';
-  END IF;
-END;
 
 DELIMITER //
 
@@ -55,4 +40,3 @@ END;
 //
 
 DELIMITER ;
-
