@@ -1,27 +1,85 @@
 from flask import Blueprint, request, jsonify
-from models import execute_query
-import bcrypt
+from backend.db_config import get_db_connection
+from datetime import datetime
 
-auth = Blueprint('auth', __name__)
+attendance_bp = Blueprint('attendance', __name__)
 
-@auth.route('/register', methods=['POST'])
-def register():
+# Route: Get all attendance records
+@attendance_bp.route('/attendance', methods=['GET'])
+def get_all_attendance():
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+    cursor.execute("""
+        SELECT a.attendance_id, u.full_name, m.meal_type, m.meal_date, a.scan_time
+        FROM Attendance a
+        JOIN Users u ON a.user_id = u.user_id
+        JOIN Meals m ON a.meal_id = m.meal_id
+        ORDER BY a.scan_time DESC
+    """)
+    results = cursor.fetchall()
+    cursor.close()
+    conn.close()
+    return jsonify(results), 200
+
+# Route: Get today's attendance
+@attendance_bp.route('/attendance/today', methods=['GET'])
+def get_todays_attendance():
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+    cursor.execute("""
+        SELECT u.full_name, m.meal_type, a.scan_time
+        FROM Attendance a
+        JOIN Users u ON a.user_id = u.user_id
+        JOIN Meals m ON a.meal_id = m.meal_id
+        WHERE m.meal_date = CURDATE()
+    """)
+    results = cursor.fetchall()
+    cursor.close()
+    conn.close()
+    return jsonify(results), 200
+
+# Route: Mark attendance for a user for a meal
+@attendance_bp.route('/attendance/mark', methods=['POST'])
+def mark_attendance():
     data = request.json
-    hashed_pw = bcrypt.hashpw(data['password'].encode('utf-8'), bcrypt.gensalt())
-    query = """INSERT INTO Users (full_name, roll_no, email, phone_number, password_hash, role, hostel)
-               VALUES (%s, %s, %s, %s, %s, %s, %s)"""
+    user_id = data.get('user_id')
+    meal_id = data.get('meal_id')
+    
+    if not user_id or not meal_id:
+        return jsonify({'error': 'Missing user_id or meal_id'}), 400
+    
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    
     try:
-        execute_query(query, (data['full_name'], data['roll_no'], data['email'],
-                              data['phone_number'], hashed_pw, data['role'], data['hostel']))
-        return jsonify({'message': 'User registered successfully'}), 201
+        # Insert scan time (current timestamp)
+        cursor.execute("""
+            INSERT INTO Attendance (user_id, meal_id, scan_time)
+            VALUES (%s, %s, NOW())
+        """, (user_id, meal_id))
+        conn.commit()
+        response = {'message': 'Attendance marked successfully'}
     except Exception as e:
-        return jsonify({'error': str(e)}), 400
+        conn.rollback()
+        response = {'error': str(e)}
+    
+    cursor.close()
+    conn.close()
+    return jsonify(response)
 
-@auth.route('/login', methods=['POST'])
-def login():
-    data = request.json
-    user = execute_query("SELECT user_id, password_hash FROM Users WHERE email=%s", (data['email'],), fetch=True)
-    if user and bcrypt.checkpw(data['password'].encode('utf-8'), user[0][1].encode('utf-8')):
-        return jsonify({'message': 'Login successful', 'user_id': user[0][0]})
-    else:
-        return jsonify({'message': 'Invalid credentials'}), 401
+# Route: Get attendance by user_id
+@attendance_bp.route('/attendance/user/<int:user_id>', methods=['GET'])
+def get_user_attendance(user_id):
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+    cursor.execute("""
+        SELECT m.meal_type, m.meal_date, a.scan_time
+        FROM Attendance a
+        JOIN Meals m ON a.meal_id = m.meal_id
+        WHERE a.user_id = %s
+        ORDER BY m.meal_date DESC
+    """, (user_id,))
+    results = cursor.fetchall()
+    cursor.close()
+    conn.close()
+    return jsonify(results), 200
