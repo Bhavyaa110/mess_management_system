@@ -12,8 +12,6 @@ CREATE TABLE Users (
     password_hash VARCHAR(255) NOT NULL,
     role ENUM('Student', 'Staff', 'Admin') DEFAULT 'Student',
     hostel ENUM('A', 'B', 'C', 'D', 'E', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'PG', 'Q', 'FRF', 'FRG'),
-    branch ENUM('COPC', 'COE', 'COBS', 'COSE', 'ENC', 'ECE', 'EEC', 'EIC', 'EVD', 'RAI', 'ELE', 'CIE', 'CCA', 'MEE', 'MEC', 'CHE', 'BT', 'BME'),
-    year ENUM('1','2','3','4'),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 -- Meals Table
@@ -48,16 +46,16 @@ CREATE TABLE Tickets (
 INSERT INTO Users
   (full_name, roll_no, email, phone_number, password_hash, role, hostel, branch, year)
 VALUES
-  ('Devansh Mehra',     221001, 'devansh.mehra@nitk.edu.in',    '9998881001', MD5('Hello@123'), 'Student', 'M', 'COPC', '2'),
-  ('Tanya Aggarwal',    221002, 'tanya.aggarwal@nitk.edu.in',   '9998881002', MD5('Tanya#456'), 'Student', 'N', 'COE',  '3'),
-  ('Yash Thakur',       221003, 'yash.thakur@nitk.edu.in',      '9998881003', MD5('Yash789!'),  'Student', 'L', 'RAI',  '1'),
-  ('Meera Iyer',        221004, 'meera.iyer@nitk.edu.in',       '9998881004', MD5('Meera@321'), 'Student', 'PG', 'EVD','4'),
-  ('Arjun Bhatt',       221005, 'arjun.bhatt@nitk.edu.in',      '9998881005', MD5('Arjun$999'), 'Student', 'FRF', 'ENC','2'),
-  ('Simran Kaur',       221006, 'simran.kaur@nitk.edu.in',      '9998881006', MD5('Simran2025'),'Student', 'FRG', 'CIE','3'),
-  ('Aniket Das',        221007, 'aniket.das@nitk.edu.in',       '9998881007', MD5('Das@pass1'), 'Student', 'Q', 'ELE',  '1'),
-  ('Nidhi Bansal',      221008, 'nidhi.bansal@nitk.edu.in',     '9998881008', MD5('Bansal@456'),'Student', 'H', 'EIC',  '4'),
-  ('Saurav Chauhan',    521001, 'saurav.chauhan@nitk.edu.in',   '9998881009', MD5('Staff@2025'),'Staff',   'G', 'CCA',  NULL),
-  ('Priya Sehgal',      921001, 'priya.sehgal@nitk.edu.in',     '9998881010', MD5('Admin#2025'),'Admin',   'K', 'CCA',  NULL);
+  ('Devansh Mehra',     221001, 'devansh.mehra@nitk.edu.in',    '9998881001', MD5('Hello@123'), 'Student', 'M'),
+  ('Tanya Aggarwal',    221002, 'tanya.aggarwal@nitk.edu.in',   '9998881002', MD5('Tanya#456'), 'Student', 'N'),
+  ('Yash Thakur',       221003, 'yash.thakur@nitk.edu.in',      '9998881003', MD5('Yash789!'),  'Student', 'L'),
+  ('Meera Iyer',        221004, 'meera.iyer@nitk.edu.in',       '9998881004', MD5('Meera@321'), 'Student', 'PG'),
+  ('Arjun Bhatt',       221005, 'arjun.bhatt@nitk.edu.in',      '9998881005', MD5('Arjun$999'), 'Student', 'FRF'),
+  ('Simran Kaur',       221006, 'simran.kaur@nitk.edu.in',      '9998881006', MD5('Simran2025'),'Student', 'FRG'),
+  ('Aniket Das',        221007, 'aniket.das@nitk.edu.in',       '9998881007', MD5('Das@pass1'), 'Student', 'Q'),
+  ('Nidhi Bansal',      221008, 'nidhi.bansal@nitk.edu.in',     '9998881008', MD5('Bansal@456'),'Student', 'H'),
+  ('Saurav Chauhan',    521001, 'saurav.chauhan@nitk.edu.in',   '9998881009', MD5('Staff@2025'),'Staff',   'G'),
+  ('Priya Sehgal',      921001, 'priya.sehgal@nitk.edu.in',     '9998881010', MD5('Admin#2025'),'Admin',   'K');
 
 -- Insert 10 users into Users table
 INSERT INTO Users
