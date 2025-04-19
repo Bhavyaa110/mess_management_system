@@ -13,3 +13,12 @@ def execute_query(query, args=None, fetch=False):
         conn.commit()
         conn.close()
         return True
+
+def cancel_meal(user_id, meal_id, conn):
+    try:
+        with conn.cursor() as cursor:
+            cursor.execute("CALL CancelMeals(%s, %s);", (user_id, meal_id))
+        conn.commit()
+    except Exception as e:
+        print("Error in cancel_meal:", e)
+        raise

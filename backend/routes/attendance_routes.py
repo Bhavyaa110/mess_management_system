@@ -58,3 +58,4 @@ def get_user_attendance(user_id):
     cursor.close()
     conn.close()
     return jsonify(results), 200
+
