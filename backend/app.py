@@ -1,19 +1,28 @@
-from flask import Flask, jsonify, request
-import MySQLdb
+from flask import Flask, jsonify, request, send_from_directory
+import mysql.connector
 from flask_cors import CORS
+import os
+from db_config import get_db_connection
 
-app = Flask(__name__)
-CORS(app)  # Allow requests from the frontend
+# --------- App Setup ---------
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+FRONTEND_DIST_DIR = os.path.join(BASE_DIR, 'frontend', 'dist')
 
-def get_db_connection():
-    return MySQLdb.connect(
-        host="localhost",
-        user="root",
-        passwd="Thapar27",
-        db="mess_management_system"
-    )
+app = Flask(__name__, static_folder=FRONTEND_DIST_DIR, static_url_path='/')
+CORS(app)
 
-@app.route('/meals', methods=['GET'])
+# --------- Frontend Serving ---------
+# --------- Frontend Serving ---------
+@app.route('/', defaults={'path': ''})
+@app.route('/<path:path>')
+def serve(path):
+    if path != "" and os.path.exists(os.path.join(FRONTEND_DIST_DIR, path)):
+        return send_from_directory(FRONTEND_DIST_DIR, path)
+    else:
+        return send_from_directory(FRONTEND_DIST_DIR, 'index.html')
+
+# --------- API Routes ---------
+@app.route('/api/meals', methods=['GET'])
 def get_meals_by_day():
     day = request.args.get('day')
     if not day:
@@ -34,8 +43,7 @@ def get_meals_by_day():
     response = {meal_type: menu for meal_type, menu in meals}
     return jsonify(response)
 
-
-@app.route('/cancel_meal', methods=['POST'])
+@app.route('/api/cancel_meal', methods=['POST'])
 def cancel_meal():
     data = request.get_json()
     user_id = data.get('user_id')
@@ -48,7 +56,7 @@ def cancel_meal():
         cursor.callproc('CancelMeals', [user_id, meal_id])
         conn.commit()
         response = {'success': True, 'message': 'Meal cancelled successfully.'}
-    except MySQLdb.Error as err:
+    except mysql.connector.Error as err:
         conn.rollback()
         response = {'success': False, 'error': str(err)}
     finally:
@@ -56,63 +64,57 @@ def cancel_meal():
         conn.close()
 
     return jsonify(response)
-
-from backend.routes.meal_routes import meal_routes
-
-app.register_blueprint(meal_routes)
-
-@app.route('/mark_attendance', methods=['POST'])
+@app.route('/api/mark_attendance', methods=['POST'])
 def mark_attendance():
-    user_id = request.json['user_id']
-    meal_id = request.json['meal_id']
-    status = request.json['status']  # 'attended', 'missed', or 'cancelled'
+    data = request.get_json()
+    user_id = data['user_id']
+    meal_id = data['meal_id']
+    status = data['status']
 
     conn = get_db_connection()
     cursor = conn.cursor()
+    try:
+        if status == 'cancelled':
+            penalty_points = 0
+            penalty_type = 'Cancelled'
+        elif status == 'attended':
+            penalty_points = 50
+            penalty_type = 'Attended'
+        else:
+            penalty_points = 20
+            penalty_type = 'Missed'
 
-    # Calculate penalty based on the status
-    if status == 'cancelled':
-        penalty_points = 0
-        penalty_type = 'Cancelled'
-    elif status == 'attended':
-        penalty_points = 50
-        penalty_type = 'Attended'
-    else:  # If the user missed the meal without cancelling
-        penalty_points = 20
-        penalty_type = 'Missed'
+        cursor.execute("""
+            INSERT INTO Penalties (user_id, meal_id, penalty_type, points)
+            VALUES (%s, %s, %s, %s)
+        """, (user_id, meal_id, penalty_type, penalty_points))
 
-    # Insert the penalty into the Penalties table
-    cursor.execute("""
-        INSERT INTO Penalties (user_id, meal_id, penalty_type, points)
-        VALUES (%s, %s, %s, %s)
-    """, (user_id, meal_id, penalty_type, penalty_points))
+        cursor.execute("""
+            UPDATE Tickets
+            SET penalty_points = %s
+            WHERE user_id = %s AND meal_id = %s
+        """, (penalty_points, user_id, meal_id))
 
-    # Update the penalty_points in the Tickets table
-    cursor.execute("""
-        UPDATE Tickets
-        SET penalty_points = %s
-        WHERE user_id = %s AND meal_id = %s
-    """, (penalty_points, user_id, meal_id))
+        cursor.execute("CALL UpdatePointsForMealAttendance(%s, %s)", (user_id, meal_id))
 
-    cursor.execute("""
-        CALL UpdatePointsForMealAttendance(%s, %s);
-    """, (user_id, meal_id))
-    conn.commit()
-    cursor.close()
-    conn.close()
+        conn.commit()
+    except mysql.connector.Error as err:
+        conn.rollback()
+        return jsonify({'error': str(err)}), 500
+    finally:
+        cursor.close()
+        conn.close()
 
     return jsonify({'message': 'Attendance marked and penalty applied successfully'}), 200
 
-@app.route('/get_user_penalties', methods=['GET'])
+@app.route('/api/get_user_penalties', methods=['GET'])
 def get_user_penalties():
     user_id = request.args.get('user_id')
 
     conn = get_db_connection()
     cursor = conn.cursor()
 
-    cursor.execute("""
-        SELECT SUM(points) FROM Penalties WHERE user_id = %s
-    """, (user_id,))
+    cursor.execute("SELECT SUM(points) FROM Penalties WHERE user_id = %s", (user_id,))
     total_penalty = cursor.fetchone()[0] or 0
 
     cursor.close()
@@ -120,26 +122,19 @@ def get_user_penalties():
 
     return jsonify({'user_id': user_id, 'total_penalty_points': total_penalty}), 200
 
-@app.route('/get_user_status', methods=['GET'])
+@app.route('/api/get_user_status', methods=['GET'])
 def get_user_status():
     user_id = request.args.get('user_id')
 
     conn = get_db_connection()
     cursor = conn.cursor()
 
-    # Get the user's total penalty points
-    cursor.execute("""
-        SELECT SUM(points) FROM Penalties WHERE user_id = %s
-    """, (user_id,))
+    cursor.execute("SELECT SUM(points) FROM Penalties WHERE user_id = %s", (user_id,))
     total_penalty = cursor.fetchone()[0] or 0
 
-    # Get the user's maximum semester points (22500 or dynamic)
-    cursor.execute("""
-        SELECT max_semester_points FROM Users WHERE user_id = %s
-    """, (user_id,))
+    cursor.execute("SELECT max_semester_points FROM Users WHERE user_id = %s", (user_id,))
     max_semester_points = cursor.fetchone()[0]
 
-    # Calculate the total earned points (max points minus penalties)
     total_earned_points = max_semester_points - total_penalty
 
     cursor.close()
@@ -152,5 +147,17 @@ def get_user_status():
         'max_semester_points': max_semester_points
     }), 200
 
+# --------- Blueprint Registration ---------
+# from backend.routes.attendance_routes import attendance_routes
+# from backend.routes.auth_routes import auth_routes
+# from backend.routes.meal_routes import meal_routes
+# from backend.routes.ticket_routes import ticket_routes
+
+# app.register_blueprint(attendance_routes, url_prefix='/api/attendance')
+# app.register_blueprint(auth_routes, url_prefix='/api/auth')
+# app.register_blueprint(meal_routes, url_prefix='/api/meals')
+# app.register_blueprint(ticket_routes, url_prefix='/api/tickets')
+
+# --------- App Run ---------
 if __name__ == '__main__':
     app.run(debug=True)

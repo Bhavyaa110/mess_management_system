@@ -1,10 +1,13 @@
+import React from 'react';
 import { cancelMeal } from '../api/mealService';
 
-const handleCancel = async () => {
-  const result = await cancelMeal(userId, mealId);
-  if (result.success) {
-    setMessage('Meal cancelled successfully!');
-  } else {
-    setMessage(result.error);
-  }
-};
+function CancelMealButton({ mealId }) {
+  const handleCancel = async () => {
+    await cancelMeal(mealId);
+    alert('Meal Cancelled!');
+  };
+
+  return <button onClick={handleCancel}>Cancel Meal</button>;
+}
+
+export default CancelMealButton;

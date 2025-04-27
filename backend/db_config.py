@@ -1,11 +1,12 @@
-import MySQL
+
+import mysql.connector
 
 def get_db_connection():
-    return MySQLdb.connect(
+    return mysql.connector.connect(
         host="localhost",
         user="root",
         passwd="Thapar27",
-        db="mess_management_system"
+        database="mess_management_system"
     )
 conn = get_db_connection()
 print("Connection successful!")

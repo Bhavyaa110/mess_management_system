@@ -1,10 +1,84 @@
+// frontend/src/api/api.js
+
 import axios from 'axios';
-const BASE_URL = "http://localhost:5000";
 
-export const generateQR = (user_id, meal_id) =>
-  axios.post(`${BASE_URL}/generate_qr`, { user_id, meal_id });
+// Create an axios instance
+const api = axios.create({
+  baseURL: '/api', 
+  withCredentials: true, 
+});
 
-export const markAttendance = (user_id, meal_id) =>
-  axios.post(`${BASE_URL}/mark_attendance`, { user_id, meal_id });
+// ========== Auth Routes ==========
 
+// Login user
+export const loginUser = (credentials) => {
+  return api.post('/auth/login', credentials);
+};
 
+// Register user
+export const registerUser = (userData) => {
+  return api.post('/auth/register', userData);
+};
+
+// Logout user
+export const logoutUser = () => {
+  return api.post('/auth/logout');
+};
+
+// Get current user info
+export const getCurrentUser = () => {
+  return api.get('/auth/user');
+};
+
+// ========== Attendance Routes ==========
+
+// Mark attendance
+export const markAttendance = (attendanceData) => {
+  return api.post('/attendance/mark', attendanceData);
+};
+
+// Get attendance record
+export const getAttendance = () => {
+  return api.get('/attendance');
+};
+
+// ========== Meal Routes ==========
+
+// Get all meals
+export const getMeals = () => {
+  return api.get('/meals');
+};
+
+// Cancel a meal
+export const cancelMeal = (mealId) => {
+  return api.delete(`/meals/${mealId}`);
+};
+
+// Book a meal
+export const bookMeal = (mealData) => {
+  return api.post('/meals/book', mealData);
+};
+
+// ========== Ticket Routes ==========
+
+// Create a ticket
+export const createTicket = (ticketData) => {
+  return api.post('/tickets', ticketData);
+};
+
+// Get all tickets
+export const getTickets = () => {
+  return api.get('/tickets');
+};
+
+// View specific ticket
+export const getTicketById = (ticketId) => {
+  return api.get(`/tickets/${ticketId}`);
+};
+
+// Delete a ticket
+export const deleteTicket = (ticketId) => {
+  return api.delete(`/tickets/${ticketId}`);
+};
+
+export default api;
