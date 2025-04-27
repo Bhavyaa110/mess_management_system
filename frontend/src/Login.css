@@ -1,0 +1,262 @@
+.desktop {
+  background-color: #EFEDE4;
+  height: 100vh;
+  width: 100vw;
+  display: flex;
+  top: 0px;
+  left: 0px;
+  position: fixed;
+  justify-content: center;
+  align-items: center;
+}
+
+.desktop .group {
+  height: 604px;
+  position: relative;
+  top: 30px;
+  width: 1014px;
+  margin: 0px;
+}
+
+.desktop .overlap {
+  height: 604px;
+  position: relative;
+  width: 1000px;
+  margin: 0px;
+}
+
+.desktop .overlap-group-wrapper {
+  height: 604px;
+  left: 0;
+  position: absolute;
+  top: 0;
+  width: 1000px;
+  margin: 0px;
+}
+
+.desktop .overlap-group {
+  height: 604px;
+  position: relative;
+  margin: 0px;
+}
+
+.desktop .IMG {
+  height: 530px;
+  left: 0;
+  object-fit: cover;
+  position: absolute;
+  top: 0;
+  border-radius: 12px;
+  width: 552px;
+  margin: 0px;
+}
+
+.desktop .rectangle {
+  background-color: #ffffff;
+  border-radius: 0px 12px 12px 0px;
+  height: 530px;
+  left: 529px;
+  display: flex;
+  justify-content: center;
+  position: absolute;
+  top: 0;
+  width: 471px;
+  margin: 0px;
+}
+
+.desktop .text-wrapper {
+  color: #4F622E;
+  font-family: "Alegreya Sans-Black", Helvetica;
+  font-size: 30px;
+  font-weight: 900;
+  letter-spacing: 0;
+  line-height: normal;
+  position: absolute;
+  text-align: center;
+  top: 78px;
+  white-space: nowrap;
+  width: 344px;
+  margin: 0px;
+}
+
+.desktop .div {
+  background-color: #C3D09A;
+  color: #4F622E;
+  font-family: "Alegreya-Medium", Helvetica;
+  font-size: 20px;
+  font-weight: 500;
+  border-radius: 3px;
+  height: 40px;
+  position: absolute;
+  top: 360px;
+  width: 346px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: none;
+  cursor: pointer;
+  letter-spacing: 0;
+  line-height: normal;
+  text-align: center;
+  left: 63px;
+}
+.div:hover{
+  background-color: #a6c079;
+}
+
+.desktop .don-t-have-an {
+  color: #4F622E;
+  font-family: "Alegreya-Medium", Helvetica;
+  font-size: 16px;
+  font-weight: 500;
+  letter-spacing: 0;
+  line-height: 24px;
+  position: absolute;
+  text-align: center;
+  top: 425px;
+  width: 331px;
+}
+
+.desktop .text-wrapper-2 {
+  color: #EFEDE4;
+  font-family: "Alegreya-Medium", Helvetica;
+  font-size: 20px;
+  font-weight: 500;
+  letter-spacing: 0;
+  line-height: normal;
+  position: absolute;
+  text-align: center;
+  width: 158px;
+}
+
+/* .desktop .rectangle-2 {
+  background-color: #EFEDE4;
+  border-radius: 3px;
+  height: 40px;
+  display: flex;
+  position: absolute;
+  top: 183px;
+  width: 346px;
+  align-items: center;
+}
+
+.desktop .rectangle-3 {
+  background-color: #EFEDE4;
+  border-radius: 3px;
+  height: 40px;
+  display: flex;
+  position: absolute;
+  top: 250px;
+  width: 346px;
+  align-items: center;
+} */
+
+.desktop .text-wrapper-3 {
+  color: #4F622E;
+  font-family: "Alegreya-Medium", Helvetica;
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0;
+  line-height: 17.5px;
+  position: absolute;
+  left: 246px;
+  top: 300px;
+  width: 183px;
+}
+
+.desktop .text-wrapper-4 {
+  color: #4F622E;
+  font-family: "Alegreya-Medium", Helvetica;
+  font-size: 15px;
+  font-weight: 500;
+  letter-spacing: 0;
+  line-height: normal;
+  position: absolute;
+  top: 307px;
+  width: 158px;
+}
+
+.desktop .img {
+  height: 17px;
+  position: absolute;
+  top: 306px;
+  width: 15px;
+}
+
+/* .desktop .text-wrapper-5 {
+  color: #4F622E;
+  font-family: "Alegreya-Medium", Helvetica;
+  font-size: 20px;
+  font-weight: 500;
+  letter-spacing: 0;
+  left: 10px;
+  line-height: normal;
+  position: absolute;
+
+} */
+
+/* .desktop .text-wrapper-6 {
+  color: #4F622E;
+  font-family: "Alegreya-Medium", Helvetica;
+  font-size: 20px;
+  font-weight: 500;
+  letter-spacing: 0;
+  left: 10px;
+  line-height: normal;
+  position: absolute;
+} */
+
+.checkbox {
+  position: absolute;
+  top: 300px;
+  left: 80px;
+  color: #4F622E;
+  font-size: 14px;
+  font-family: "Alegreya-Medium", Helvetica;
+}
+
+.tickbox {
+  position: absolute;
+  left: -17px;
+  top: 1.5px;
+}
+.loginform{
+  display: flex;
+  align-items: center;
+}
+.email1 {
+  background-color: #EFEDE4;
+  border: none;
+  font-size: 20px;
+  padding-left: 10px;
+  color: #4F622E;
+  font-family: "Alegreya-Medium", Helvetica;
+  width: 346px;
+  height: 45px;
+  position: absolute;
+  top: 170px;
+  border-radius: 5px;
+}
+
+.password1 {
+  background-color: #EFEDE4;
+  border: none;
+  font-size: 20px;
+  padding-left: 10px;
+  color: #4F622E;
+  font-family: "Alegreya-Medium", Helvetica;
+  width: 346px;
+  height: 45px;
+  position: absolute;
+  top: 245px;
+  border-radius: 5px;
+}
+
+input::placeholder {
+  color: #4F622E;
+  opacity: 0.7;
+}
+
+.register-link {
+  color: #4F622E;
+}

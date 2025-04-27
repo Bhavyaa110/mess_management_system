@@ -1,4 +1,4 @@
-import MySQLdb
+import MySQL
 
 def get_db_connection():
     return MySQLdb.connect(
