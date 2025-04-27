@@ -3,20 +3,31 @@ import Food from "./assets/Food.png";
 import "./Login.css";
 import { Link } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
+import { loginUser } from '../api/api'; // Importing the login API function
 
 export const Login = () => {
   const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     const email = e.target.elements[0].value;
     const password = e.target.elements[1].value;
 
-    // Optionally: Add login logic here (e.g., Firebase, auth API)
-    if (email && password) {
-      // If login successful:
-      navigate('/LandingPage');
+    // Call the loginUser API function
+    try {
+      const response = await loginUser({ email, password });
+      
+      // If login is successful, navigate to the LandingPage
+      if (response.data) {
+        console.log('Login successful', response.data);
+        navigate('/LandingPage');
+      } else {
+        alert('Login failed. Please try again.');
+      }
+    } catch (error) {
+      console.error("Error logging in: ", error);
+      alert('Login failed. Please check your credentials.');
     }
   };
 
