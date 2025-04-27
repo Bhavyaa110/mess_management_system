@@ -3,33 +3,34 @@ import Food from "./assets/Food.png";
 import "./Login.css";
 import { Link } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
-import { loginUser } from '../api/api'; // Importing the login API function
+import { loginUser } from "./api/api.js";
 
 export const Login = () => {
   const navigate = useNavigate();
+// in Login.jsx
+const handleSubmit = async (e) => {
+  e.preventDefault();
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const email = e.target.elements[0].value;
+  const password = e.target.elements[1].value;
 
-    const email = e.target.elements[0].value;
-    const password = e.target.elements[1].value;
-
-    // Call the loginUser API function
-    try {
-      const response = await loginUser({ email, password });
-      
-      // If login is successful, navigate to the LandingPage
-      if (response.data) {
-        console.log('Login successful', response.data);
-        navigate('/LandingPage');
-      } else {
-        alert('Login failed. Please try again.');
-      }
-    } catch (error) {
-      console.error("Error logging in: ", error);
-      alert('Login failed. Please check your credentials.');
+  try {
+    const response = await loginUser({ email, password });
+    
+    // Check for success property in response
+    if (response.data && response.data.success) {
+      console.log('Login successful', response.data);
+      // Store user data in localStorage or context
+      localStorage.setItem('user', JSON.stringify(response.data));
+      navigate('/LandingPage');
+    } else {
+      alert('Login failed. Please try again.');
     }
-  };
+  } catch (error) {
+    console.error("Error logging in: ", error);
+    alert('Login failed. Please check your credentials.');
+  }
+};
 
   return (
     <div className="desktop">

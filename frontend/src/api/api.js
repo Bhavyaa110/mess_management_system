@@ -45,13 +45,13 @@ export const getAttendance = () => {
 // ========== Meal Routes ==========
 
 // Get all meals
-export const getMeals = () => {
-  return api.get('/meals');
+export const getMeals = (day) => {
+  return api.get('/meals', {params: {day}});
 };
 
 // Cancel a meal
-export const cancelMeal = (mealId) => {
-  return api.delete(`/meals/${mealId}`);
+export const cancelMeal = (userData) => {
+  return api.delete('/cancel_meal', userData);
 };
 
 // Book a meal

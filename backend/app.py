@@ -6,14 +6,17 @@ from db_config import get_db_connection
 
 # --------- App Setup ---------
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-FRONTEND_DIST_DIR = os.path.join(BASE_DIR, 'frontend', 'dist')
+FRONTEND_DIST_DIR = os.path.join(os.path.dirname(BASE_DIR), 'frontend', 'dist')
 
 app = Flask(__name__, static_folder=FRONTEND_DIST_DIR, static_url_path='/')
 CORS(app)
 
 # --------- Frontend Serving ---------
 # --------- Frontend Serving ---------
-@app.route('/', defaults={'path': ''})
+@app.route('/')
+def index():
+    # Return your frontend if you have one, or a simple message
+    return "Mess Management System API is running. Use /api/meals endpoint to access data."
 @app.route('/<path:path>')
 def serve(path):
     if path != "" and os.path.exists(os.path.join(FRONTEND_DIST_DIR, path)):
@@ -148,6 +151,7 @@ def get_user_status():
     }), 200
 
 # --------- Blueprint Registration ---------
+# Comment out these lines to fix the import error
 # from backend.routes.attendance_routes import attendance_routes
 # from backend.routes.auth_routes import auth_routes
 # from backend.routes.meal_routes import meal_routes
@@ -157,7 +161,6 @@ def get_user_status():
 # app.register_blueprint(auth_routes, url_prefix='/api/auth')
 # app.register_blueprint(meal_routes, url_prefix='/api/meals')
 # app.register_blueprint(ticket_routes, url_prefix='/api/tickets')
-
 # --------- App Run ---------
 if __name__ == '__main__':
     app.run(debug=True)
