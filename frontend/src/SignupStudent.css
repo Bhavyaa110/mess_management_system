@@ -1,0 +1,251 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Alegreya Sans', sans-serif;
+}
+
+body, html {
+  height: 100%;
+  width: 100%;
+  background-color: #EFEDE4;
+  display: flex;
+  align-items: center;
+  box-sizing: border-box;
+  /* overflow: hidden; */
+}
+
+.container {
+  display: flex;
+  max-width: 900px;
+  margin: 40px auto;
+  background-color: white;
+  border-radius: 15px;
+  overflow: hidden;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  
+}
+
+
+.image-section {
+  width: 50%;
+  background-color: #4F622E;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.image-section img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.form-section {
+  width: 50%;
+  padding: 40px;
+  position: relative;
+  background-color: white;
+}
+
+.form-section h1 {
+  color: #4F622E;
+  font-weight: 900;
+  font-size: 24px;
+  margin-bottom: 8px;
+  text-align: center;
+}
+
+.form-section .subtitle {
+  text-align: center;
+  font-size: 14px;
+  color: #4F622E;
+  margin-bottom: 20px;
+  font-family: 'Alegreya Sans', sans-serif;
+}
+
+/* .tabs {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.tabs button {
+  background-color: #EFEDE4;
+  border: none;
+  padding: 10px 20px;
+  color: #4F622E;
+  font-weight: 600;
+  cursor: pointer;
+  border-radius: 4px;
+  margin: 0 5px;
+  transition: all 0.3s ease;
+}
+
+.tabs .active {
+  background-color: #4F622E;
+  color: white;
+} */
+
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.form-row {
+  display: flex;
+  gap: 10px;
+}
+
+.name {
+  flex: 1;
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #EFEDE4;
+  border-radius: 4px;
+  background-color: #EFEDE4;
+  color: #4F622E;
+  font-size: 14px;
+  box-sizing: border-box; /* ensures padding doesn't break width */
+}
+.email{
+  flex: 1;
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #EFEDE4;
+  border-radius: 4px;
+  background-color: #EFEDE4;
+  color: #4F622E;
+  font-size: 14px;
+  box-sizing: border-box;
+}
+.password{
+  flex: 1;
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #EFEDE4;
+  border-radius: 4px;
+  background-color: #EFEDE4;
+  color: #4F622E;
+  font-size: 14px;
+  box-sizing: border-box;
+}
+
+input::placeholder {
+  color: #4F622E;
+  opacity: 0.7;
+}
+
+/* Push typed text to the right while keeping placeholder left */
+input {
+  padding-left: 50px;
+}
+
+/* Submit button */
+.submit-btn {
+  background-color: #C3D09A;
+  color: #4F622E;
+  padding: 10px;
+  border: none;
+  border-radius: 3px;
+  font-size: 16px;
+  cursor: pointer;
+  width: 100%;
+  transition: background 0.3s ease;
+}
+
+.submit-btn:hover {
+  background-color: #a6c079;
+}
+
+.login-link {
+  text-align: center;
+  font-size: 14px;
+  margin-top: 10px;
+  color: #4F622E;
+}
+
+.login-link a {
+  color: #4F622E;
+  text-decoration: underline;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .container {
+    flex-direction: column;
+  }
+
+  .image-section,
+  .form-section {
+    width: 100%;
+  }
+
+  .image-section {
+    height: 200px;
+  }
+
+  .form-section {
+    padding: 20px;
+  }
+
+  .form-row {
+    flex-direction: column;
+  }
+}
+.toggle-buttons {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 20px;
+  background-color: #ffffff;
+  border-radius: 8px;
+  overflow: hidden;
+  width: 270px;
+  margin-left: auto;
+  margin-right: auto;
+}
+.toggle-buttons button{
+  padding: 10px 40px;
+  border: none;
+  font-weight: 600;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+  flex: 1;
+}
+.Student {
+  color: #4F622E;
+  background-color:#C3D09A;
+  border-top-left-radius: 20px;
+  border-bottom-left-radius: 20px;
+}
+.Staff{
+  color: #4F622E;
+  background-color: #EFEDE4;
+  border-top-right-radius: 20px;
+  border-bottom-right-radius: 20px;
+}
+
+/* .toggle-btn:first-child {
+  border-top-left-radius: 8px;
+  border-bottom-left-radius: 8px;
+}
+
+.toggle-btn:last-child {
+  border-top-right-radius: 8px;
+  border-bottom-right-radius: 8px;
+} */
+
+/* .toggle-btn.active {
+  background-color: #4F622E;
+  color: white;
+} */
+
+.separator-line {
+  width: 1px;
+  height: 100%;
+  background-color: white;
+}
+
