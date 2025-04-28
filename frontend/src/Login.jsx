@@ -13,21 +13,31 @@ const handleSubmit = async (e) => {
 
   const email = e.target.elements[0].value;
   const password = e.target.elements[1].value;
+  
+  console.log("Attempting login with:", { email, password });
 
   try {
-    const response = await loginUser({ email, password });
+    // For debugging, bypass the API call
+    console.log("WARNING: API call bypassed for debugging");
+    // Hard-coded successful login for testing frontend navigation
+    navigate('/LandingPage');
     
-    // Check for success property in response
+    // Comment out the actual API call for now
+    /*
+    const response = await loginUser({ email, password });
+    console.log("Login response:", response.data);
+    
     if (response.data && response.data.success) {
       console.log('Login successful', response.data);
-      // Store user data in localStorage or context
-      localStorage.setItem('user', JSON.stringify(response.data));
       navigate('/LandingPage');
     } else {
+      console.log('Login failed:', response.data);
       alert('Login failed. Please try again.');
     }
+    */
   } catch (error) {
-    console.error("Error logging in: ", error);
+    console.error("Error logging in:", error);
+    console.error("Error details:", error.response?.data || error.message);
     alert('Login failed. Please check your credentials.');
   }
 };

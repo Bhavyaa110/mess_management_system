@@ -6,10 +6,10 @@ from flask import Blueprint, request, jsonify
 from backend.db_config import get_db_connection
 from datetime import datetime
 
-attendance_bp = Blueprint('attendance', __name__)
+attendance_routes = Blueprint('attendance', __name__)
 
 # Route: Get all attendance records
-@attendance_bp.route('/attendance', methods=['GET'])
+@attendance_routes.route('/attendance', methods=['GET'])
 def get_all_attendance():
     conn = get_db_connection()
     cursor = conn.cursor(dictionary=True)
@@ -26,7 +26,7 @@ def get_all_attendance():
     return jsonify(results), 200
 
 # Route: Get today's attendance
-@attendance_bp.route('/attendance/today', methods=['GET'])
+@attendance_routes.route('/attendance/today', methods=['GET'])
 def get_todays_attendance():
     conn = get_db_connection()
     cursor = conn.cursor(dictionary=True)
@@ -43,7 +43,7 @@ def get_todays_attendance():
     return jsonify(results), 200
 
 # Route: Get attendance by user_id
-@attendance_bp.route('/attendance/user/<int:user_id>', methods=['GET'])
+@attendance_routes.route('/attendance/user/<int:user_id>', methods=['GET'])
 def get_user_attendance(user_id):
     conn = get_db_connection()
     cursor = conn.cursor(dictionary=True)

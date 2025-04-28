@@ -1,6 +1,7 @@
 
 import mysql.connector
-from config import Config
+# In backend/db_config.py
+from backend.config import Config
 def get_db_connection():
     return mysql.connector.connect(
         host="localhost",

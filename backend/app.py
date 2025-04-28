@@ -2,7 +2,7 @@ from flask import Flask, jsonify, request, send_from_directory
 import mysql.connector
 from flask_cors import CORS
 import os
-from db_config import get_db_connection
+from backend.db_config import get_db_connection
 
 # --------- App Setup ---------
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -149,9 +149,7 @@ def get_user_status():
         'total_earned_points': total_earned_points,
         'max_semester_points': max_semester_points
     }), 200
-
-# --------- Blueprint Registration ---------
-# Comment out these lines to fix the import error
+# Comment out these lines
 # from backend.routes.attendance_routes import attendance_routes
 # from backend.routes.auth_routes import auth_routes
 # from backend.routes.meal_routes import meal_routes
@@ -161,6 +159,32 @@ def get_user_status():
 # app.register_blueprint(auth_routes, url_prefix='/api/auth')
 # app.register_blueprint(meal_routes, url_prefix='/api/meals')
 # app.register_blueprint(ticket_routes, url_prefix='/api/tickets')
+
+
+import bcrypt  # Add this import at the top
+
+# Add these routes directly in app.py
+@app.route('/api/auth/login', methods=['POST'])
+def login():
+    data = request.get_json()
+    
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    
+    try:
+        cursor.execute("SELECT user_id, password_hash FROM Users WHERE email=%s", (data['email'],))
+        user = cursor.fetchone()
+        
+        if user and bcrypt.checkpw(data['password'].encode('utf-8'), user[1].encode('utf-8')):
+            return jsonify({'message': 'Login successful', 'user_id': user[0]})
+        else:
+            return jsonify({'message': 'Invalid credentials'}), 401
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+    finally:
+        cursor.close()
+        conn.close()
+
 # --------- App Run ---------
 if __name__ == '__main__':
     app.run(debug=True)
