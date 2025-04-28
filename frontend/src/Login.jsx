@@ -3,33 +3,44 @@ import Food from "./assets/Food.png";
 import "./Login.css";
 import { Link } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
-import { loginUser } from '../api/api'; // Importing the login API function
+import { loginUser } from "./api/api.js";
 
 export const Login = () => {
   const navigate = useNavigate();
+// in Login.jsx
+const handleSubmit = async (e) => {
+  e.preventDefault();
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const email = e.target.elements[0].value;
+  const password = e.target.elements[1].value;
+  
+  console.log("Attempting login with:", { email, password });
 
-    const email = e.target.elements[0].value;
-    const password = e.target.elements[1].value;
-
-    // Call the loginUser API function
-    try {
-      const response = await loginUser({ email, password });
-      
-      // If login is successful, navigate to the LandingPage
-      if (response.data) {
-        console.log('Login successful', response.data);
-        navigate('/LandingPage');
-      } else {
-        alert('Login failed. Please try again.');
-      }
-    } catch (error) {
-      console.error("Error logging in: ", error);
-      alert('Login failed. Please check your credentials.');
+  try {
+    // For debugging, bypass the API call
+    console.log("WARNING: API call bypassed for debugging");
+    // Hard-coded successful login for testing frontend navigation
+    navigate('/LandingPage');
+    
+    // Comment out the actual API call for now
+    /*
+    const response = await loginUser({ email, password });
+    console.log("Login response:", response.data);
+    
+    if (response.data && response.data.success) {
+      console.log('Login successful', response.data);
+      navigate('/LandingPage');
+    } else {
+      console.log('Login failed:', response.data);
+      alert('Login failed. Please try again.');
     }
-  };
+    */
+  } catch (error) {
+    console.error("Error logging in:", error);
+    console.error("Error details:", error.response?.data || error.message);
+    alert('Login failed. Please check your credentials.');
+  }
+};
 
   return (
     <div className="desktop">

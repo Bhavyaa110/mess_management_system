@@ -2,9 +2,9 @@ from flask import Blueprint, request, jsonify
 from backend.db_config import get_db_connection
 import bcrypt
 
-auth = Blueprint('auth', __name__)
+auth_routes = Blueprint('auth', __name__)
 
-@auth.route('/register', methods=['POST'])
+@auth_routes.route('/register', methods=['POST'])
 def register():
     data = request.json
     hashed_pw = bcrypt.hashpw(data['password'].encode('utf-8'), bcrypt.gensalt())
@@ -17,7 +17,7 @@ def register():
     except Exception as e:
         return jsonify({'error': str(e)}), 400
 
-@auth.route('/login', methods=['POST'])
+@auth_routes.route('/login', methods=['POST'])
 def login():
     data = request.json
     user = execute_query("SELECT user_id, password_hash FROM Users WHERE email=%s", (data['email'],), fetch=True)
@@ -25,3 +25,21 @@ def login():
         return jsonify({'message': 'Login successful', 'user_id': user[0][0]})
     else:
         return jsonify({'message': 'Invalid credentials'}), 401
+    
+def execute_query(query, params=None, fetch=False):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    try:
+        cursor.execute(query, params)
+        if fetch:
+            result = cursor.fetchall()
+        else:
+            conn.commit()
+            result = None
+    except Exception as e:
+        conn.rollback()
+        raise e
+    finally:
+        cursor.close()
+        conn.close()
+    return result if fetch else None

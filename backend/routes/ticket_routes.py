@@ -4,9 +4,9 @@ import io
 import base64
 from backend.db_config import get_db_connection
 
-ticket_bp = Blueprint('ticket', __name__)
+ticket_routes = Blueprint('ticket', __name__)
 
-@ticket_bp.route('/generate_qr', methods=['POST'])
+@ticket_routes.route('/generate_qr', methods=['POST'])
 def generate_qr():
     data = request.get_json()
     user_id = data.get('user_id')
@@ -21,7 +21,7 @@ def generate_qr():
 
     return jsonify({'qr_code': qr_str})
 
-@ticket_bp.route('/mark_attendance', methods=['POST'])
+@ticket_routes.route('/mark_attendance', methods=['POST'])
 def mark_attendance():
     data = request.get_json()
     user_id, meal_id = data.get('user_id'), data.get('meal_id')
