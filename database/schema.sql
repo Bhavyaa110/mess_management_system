@@ -80,7 +80,6 @@ INSERT INTO Meals (meal_type, day_of_week, menu) VALUES
 ('Breakfast', 'Friday', 'Cornflakes, Aloo Pyaz Parantha, Cold Milk, Tea / Hot Milk, Brown Bread, Mix Jam, Butter, Curd, Boiled Egg & Bhurji'),
 ('Breakfast', 'Saturday', 'Gobhi Parantha, Cold Milk, Tea / Hot Milk, Brown Bread, Mix Jam, Butter, Curd, Green Chutney, Boiled Egg & Omelette'),
 ('Breakfast', 'Sunday', 'Macroni, Mix veg Parantha, Cold Milk, Tea / Hot Milk, Brown Bread, Mix Jam, Butter, Curd, Boiled Egg & Omelette'),
-
 -- Lunch
 ('Lunch', 'Monday', 'Rajmah Raseela, Lauki masala, Jeera Rice, Chapati, Jeera Raita, Green Salad, Jaljeera'),
 ('Lunch', 'Tuesday', 'Kadhi Pakoda, Aloo Capsicum, Plain Rice, Chapati, Green Salad, Roohafza'),
@@ -89,7 +88,6 @@ INSERT INTO Meals (meal_type, day_of_week, menu) VALUES
 ('Lunch', 'Friday', 'Black Chana Raseela, Nutri Keema, Steamed Rice, Chapati, OTC Raita, Green Salad, Masala Chaas'),
 ('Lunch', 'Saturday', 'Sambhar, Medu Vada, Soya Garlic Rice, Uttapam, Coconut Chutney, Fryums, Nimbu Pani'),
 ('Lunch', 'Sunday', 'Aloo Bhaji, Poori, Steamed Rice, Chapati, Mint Chutney, Laccha Onion, Sweet Lassi'),
-
 -- Dinner
 ('Dinner', 'Monday', 'Aloo Baingan, Dal Dhaba, Steamed Rice, Chapati, Sirka Onion, Curd, Rashbhari'),
 ('Dinner', 'Tuesday', 'Kadhai Paneer, Dal Fry, Plain Rice, Tandoori Roti, Green Salad, Ice Cream, Egg Curry'),
