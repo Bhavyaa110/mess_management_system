@@ -12,11 +12,9 @@ app = Flask(__name__, static_folder=FRONTEND_DIST_DIR, static_url_path='/')
 CORS(app)
 
 # --------- Frontend Serving ---------
-# --------- Frontend Serving ---------
 @app.route('/')
 def index():
-    # Return your frontend if you have one, or a simple message
-    return "Mess Management System API is running. Use /api/meals endpoint to access data."
+    return "Mess Management System API is running."
 @app.route('/<path:path>')
 def serve(path):
     if path != "" and os.path.exists(os.path.join(FRONTEND_DIST_DIR, path)):
@@ -159,6 +157,7 @@ def get_user_status():
 # app.register_blueprint(auth_routes, url_prefix='/api/auth')
 # app.register_blueprint(meal_routes, url_prefix='/api/meals')
 # app.register_blueprint(ticket_routes, url_prefix='/api/tickets')
+   
 
 
 import bcrypt  # Add this import at the top
@@ -167,24 +166,72 @@ import bcrypt  # Add this import at the top
 @app.route('/api/auth/login', methods=['POST'])
 def login():
     data = request.get_json()
-    
     conn = get_db_connection()
     cursor = conn.cursor()
-    
     try:
-        cursor.execute("SELECT user_id, password_hash FROM Users WHERE email=%s", (data['email'],))
-        user = cursor.fetchone()
-        
-        if user and bcrypt.checkpw(data['password'].encode('utf-8'), user[1].encode('utf-8')):
-            return jsonify({'message': 'Login successful', 'user_id': user[0]})
+        cursor.execute(
+          "SELECT user_id, full_name, roll_no, email, phone_number, role, hostel, password_hash "
+          "FROM Users WHERE email=%s", (data['email'],)
+        )
+        row = cursor.fetchone()
+        if row and bcrypt.checkpw(data['password'].encode(), row[7].encode()):
+            user = {
+              "user_id": row[0],
+              "full_name": row[1],
+              "roll_no": row[2],
+              "email": row[3],
+              "phone_number": row[4],
+              "role": row[5],
+              "hostel": row[6]
+            }
+            return jsonify({ "success": True, "user": user }), 200
         else:
-            return jsonify({'message': 'Invalid credentials'}), 401
+            return jsonify({ "success": False, "message": "Invalid credentials" }), 401
+    finally:
+        cursor.close(); conn.close()
+
+# … your existing imports …
+
+@app.route('/api/auth/register', methods=['POST'])
+def signup():
+    data = request.get_json()
+    required = ['full_name','roll_no','email','phone_number','password','role','hostel']
+    if not all(field in data for field in required):
+        return jsonify({'success':False,'message':'Missing fields'}), 400
+
+    # hash password
+    pw_hash = bcrypt.hashpw(data['password'].encode('utf-8'), bcrypt.gensalt()).decode()
+
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    try:
+        cursor.execute("""
+            INSERT INTO Users
+              (full_name, roll_no, email, phone_number, password_hash, role, hostel)
+            VALUES (%s,%s,%s,%s,%s,%s,%s)
+        """, (
+            data['full_name'],
+            data['roll_no'],
+            data['email'],
+            data['phone_number'],
+            pw_hash,
+            data['role'],
+            data['hostel']
+        ))
+        conn.commit()
+        return jsonify({'success':True, 'message':'User registered'}), 201
+
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        conn.rollback()
+        # duplicate-key or other error
+        return jsonify({'success':False,'message':str(e)}), 400
+
     finally:
         cursor.close()
         conn.close()
 
+
 # --------- App Run ---------
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host='0.0.0.0', port=5001, debug=True)
+
