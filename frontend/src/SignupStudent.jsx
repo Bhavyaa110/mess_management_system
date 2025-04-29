@@ -30,7 +30,6 @@ export const SignupStudent = () => {
     document.getElementById("student").style.color="#4F622E"
     document.getElementById("rollno").remove()
     x++
-    console.log(x)
   }
   return (
     <div className="container">
