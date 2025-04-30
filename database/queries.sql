@@ -34,4 +34,9 @@ WHERE DATE(a.scan_time) = CURDATE()
   AND a.status = 'present'
 GROUP BY m.meal_type;
 
+SELECT user_id, email, password_hash FROM Users WHERE email = 'hello@hello';
+
+SELECT * FROM Users WHERE email = 'hello@hello';
+
+
 

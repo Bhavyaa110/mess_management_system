@@ -58,16 +58,15 @@ CREATE TABLE Tickets (
 
 -- Insert Sample Data into Users Table
 INSERT INTO Users (full_name, roll_no, email, phone_number, password_hash, role, hostel) VALUES
-('Devansh Mehra', 221001, 'devansh.mehra@nitk.edu.in', '9998881001', MD5('Hello@123'), 'Student', 'M'),
-('Tanya Aggarwal', 221002, 'tanya.aggarwal@nitk.edu.in', '9998881002', MD5('Tanya#456'), 'Student', 'N'),
-('Yash Thakur', 221003, 'yash.thakur@nitk.edu.in', '9998881003', MD5('Yash789!'), 'Student', 'L'),
-('Meera Iyer', 221004, 'meera.iyer@nitk.edu.in', '9998881004', MD5('Meera@321'), 'Student', 'PG'),
-('Arjun Bhatt', 221005, 'arjun.bhatt@nitk.edu.in', '9998881005', MD5('Arjun$999'), 'Student', 'FRF'),
-('Simran Kaur', 221006, 'simran.kaur@nitk.edu.in', '9998881006', MD5('Simran2025'), 'Student', 'FRG'),
-('Aniket Das', 221007, 'aniket.das@nitk.edu.in', '9998881007', MD5('Das@pass1'), 'Student', 'Q'),
-('Nidhi Bansal', 221008, 'nidhi.bansal@nitk.edu.in', '9998881008', MD5('Bansal@456'), 'Student', 'H'),
-('Saurav Chauhan', 521001, 'saurav.chauhan@nitk.edu.in', '9998881009', MD5('Staff@2025'), 'Staff', 'G'),
-('Priya Sehgal', 921001, 'priya.sehgal@nitk.edu.in', '9998881010', MD5('Admin#2025'), 'Staff', 'K');
+('bhavya', 12589, 'it@it', '987', 'it', 'Student', 'Q');
+
+('Tanya Aggarwal', 221002, 'tanya.aggarwal@nitk.edu.in', '9998881002', 'Tanya#456', 'Student', 'N'),
+('Yash Thakur', 221003, 'yash.thakur@nitk.edu.in', '9998881003', 'Yash789!', 'Student', 'L'),
+('Meera Iyer', 221004, 'meera.iyer@nitk.edu.in', '9998881004', 'Simran2025', 'Student', 'FRG'),
+('Aniket Das', 221007, 'aniket.das@nitk.edu.in', '9998881007', 'Das@pass1', 'Student', 'Q'),
+('Nidhi Bansal', 221008, 'nidhi.bansal@nitk.edu.in', '9998881008', 'Bansal@456', 'Student', 'H'),
+('Saurav Chauhan', 521001, 'saurav.chauhan@nitk.edu.in', '9998881009', 'Staff@2025', 'Staff', 'G'),
+('Priya Sehgal', 921001, 'priya.sehgal@nitk.edu.in', '9998881010', 'Admin#2025', 'Staff', 'K');
 
 
 -- Insert Sample Data into Meals Table
@@ -106,9 +105,7 @@ INSERT INTO Tickets (user_id, meal_id, status, purchase_date) VALUES
 (5, 3, 'Reserved', '2025-03-27 19:00:00'),
 (6, 4, 'Cancelled', '2025-03-28 07:55:00'),
 (7, 5, 'Reserved', '2025-03-28 12:15:00'),
-(8, 6, 'Pending', '2025-03-28 12:40:00'),
-(9, 7, 'Reserved', '2025-03-29 08:05:00'),
-(10, 8, 'Reserved', '2025-03-29 12:20:00');
+(8, 6, 'Pending', '2025-03-28 12:40:00');
 
 -- Insert Data into Attendance Table
 INSERT INTO Attendance (user_id, meal_id, scan_time) VALUES
@@ -119,9 +116,7 @@ INSERT INTO Attendance (user_id, meal_id, scan_time) VALUES
 (5, 3, '2025-03-27 19:30:00'),
 (6, 4, NULL),
 (7, 5, '2025-03-28 08:15:00'),
-(8, 6, NULL),
-(9, 7, '2025-03-29 09:00:00'),
-(10, 8, '2025-03-29 13:20:00');
+(8, 6, NULL);
 
 -- Insert Meal Timings Data
 INSERT INTO Meal_Timings (meal_type, start_time, end_time) VALUES
