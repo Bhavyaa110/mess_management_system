@@ -1,0 +1,99 @@
+// frontend/src/api/api.js
+import axios from 'axios';
+
+// Create an axios instance
+const api = axios.create({
+  baseURL: '/http://localhost:5001/api/auth', 
+  withCredentials: true, 
+});
+
+// ========== Auth Routes ==========
+
+// Login user
+export const loginUser = async (credentials) => {
+  try {
+    const response = await axios.post('http://localhost:5001/api/auth/login', credentials, {
+      headers: { 'Content-Type': 'application/json' },
+    });
+    return response;
+  } catch (error) {
+    console.error(error.response.data); // Log backend error for debugging
+    throw error;
+  }
+};
+
+
+// Register user
+export const SignupStudent = async (userData) => {
+  try {
+    console.log("Payload being sent:", userData);  // Debugging log
+    const response = await api.post('/auth/SignupStudent', userData);
+    return response.data;
+  } catch (error) {
+    console.error("Error during registration:", error.response?.data || error.message);
+    throw error;
+  }
+};
+
+// Logout user
+export const logoutUser = () => {
+  return api.post('/auth/logout');
+};
+
+// Get current user info
+export const getCurrentUser = () => {
+  return api.get('/auth/user');
+};
+
+// ========== Attendance Routes ==========
+
+// Mark attendance
+export const markAttendance = (attendanceData) => {
+  return api.post('/attendance/mark', attendanceData);
+};
+
+// Get attendance record
+export const getAttendance = () => {
+  return api.get('/attendance');
+};
+
+// ========== Meal Routes ==========
+
+// Get all meals
+export const getMeals = (day) => {
+  return api.get('/meals', {params: {day}});
+};
+
+// Cancel a meal
+export const cancelMeal = (userData) => {
+  return api.delete('/cancel_meal', userData);
+};
+
+// Book a meal
+export const bookMeal = (mealData) => {
+  return api.post('/meals/book', mealData);
+};
+
+// ========== Ticket Routes ==========
+
+// Create a ticket
+export const createTicket = (ticketData) => {
+  return api.post('/tickets', ticketData);
+};
+
+// Get all tickets
+export const getTickets = () => {
+  return api.get('/tickets');
+};
+
+// View specific ticket
+export const getTicketById = (ticketId) => {
+  return api.get(/tickets/ idhar bhi kuch tha same wit neeche ''');
+};
+
+// Delete a ticket
+export const deleteTicket = (ticketId) => {
+  return api.delete("""/tickets""");
+};
+
+export default api;
