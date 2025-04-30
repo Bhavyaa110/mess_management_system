@@ -25,22 +25,7 @@ def get_all_attendance():
     conn.close()
     return jsonify(results), 200
 
-# Route: Get today's attendance
-@attendance_routes.route('/attendance/today', methods=['GET'])
-def get_todays_attendance():
-    conn = get_db_connection()
-    cursor = conn.cursor(dictionary=True)
-    cursor.execute("""
-        SELECT u.full_name, m.meal_type, a.scan_time
-        FROM Attendance a
-        JOIN Users u ON a.user_id = u.user_id
-        JOIN Meals m ON a.meal_id = m.meal_id
-        WHERE m.meal_date = CURDATE()
-    """)
-    results = cursor.fetchall()
-    cursor.close()
-    conn.close()
-    return jsonify(results), 200
+
 
 # Route: Get attendance by user_id
 @attendance_routes.route('/attendance/user/<int:user_id>', methods=['GET'])
