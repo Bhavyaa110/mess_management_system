@@ -249,6 +249,87 @@ def signup():
         cursor.close()
         conn.close()
 
+#will give you data on specific things could have been on admin/dashboard but im keeping it here 
+@app.route('/api/AdminPage', methods=['GET'])
+def admin_dashboard():
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    try:
+        # Example queries for admin dashboard data
+        cursor.execute("SELECT COUNT(*) FROM Users WHERE role='Student'")
+        total_students = cursor.fetchone()[0]
+
+        cursor.execute("SELECT COUNT(*) FROM Users WHERE role='Staff'")
+        total_staff = cursor.fetchone()[0]
+
+        cursor.execute("SELECT COUNT(*) FROM Meals")
+        total_meals = cursor.fetchone()[0]
+
+        data = {
+            "total_students": total_students,
+            "total_staff": total_staff,
+            "total_meals": total_meals,
+        }
+        return jsonify(data), 200
+    except mysql.connector.Error as err:
+        return jsonify({"error": str(err)}), 500
+    finally:
+        cursor.close()
+        conn.close()
+
+@app.route('/api/today-attendance', methods=['GET'])
+def today_attendance():
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    try:
+        # Join Meals and Attendance tables to group attendance by meal_id
+        cursor.execute("""
+            SELECT M.meal_type, COUNT(A.status) AS attendance
+            FROM Meals M
+            LEFT JOIN Attendance A ON M.meal_id = A.meal_id AND A.status = 'present'
+            GROUP BY M.meal_type;
+        """)
+        attendance = cursor.fetchall()
+
+        # Format the response
+        result = [{"meal_type": row[0], "attendance": row[1]} for row in attendance]
+        return jsonify(result), 200
+    except Exception as e:
+        print("Error fetching today's attendance:", e)
+        return jsonify({"error": str(e)}), 500
+    finally:
+        cursor.close()
+        conn.close()
+
+
+@app.route('/api/attendance/<roll_no>', methods=['GET'])
+def attendance_by_roll_no(roll_no):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    try:
+        # Fetch attendance details for a specific roll number
+        cursor.execute("""
+            SELECT M.meal_type, A.status
+            FROM Attendance A
+            JOIN Meals M ON A.meal_id = M.meal_id
+            JOIN Users U ON A.user_id = U.user_id
+            WHERE U.roll_no = %s
+        """, (roll_no,))
+        attendance = cursor.fetchall()
+
+        # Structure the response
+        result = {"roll_no": roll_no, "details": [{"meal_type": row[0], "status": row[1]} for row in attendance]}
+        return jsonify(result), 200
+    except Exception as e:
+        print("Error fetching attendance by roll number:", e)
+        return jsonify({"error": str(e)}), 500
+    finally:
+        cursor.close()
+        conn.close()
+
 
 
 # --------- App Run ---------

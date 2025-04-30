@@ -22,8 +22,41 @@ export const loginUser = async (credentials) => {
   }
 };
 
+export const fetchAdminData = async () => {
+  try {
+    const response = await axios.get('/api/AdminPage', {
+      headers: { 'Content-Type': 'application/json' },
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching admin data:", error.response?.data || error.message);
+    throw error;
+  }
+};
+
+export const fetchTodayAttendance = async () => {
+  try {
+    const response = await axios.get('http://localhost:5001/api/today-attendance');
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching today's attendance:", error.response?.data || error.message);
+    throw error;
+  }
+};
+export const fetchAttendanceByRollNo = async (rollNo) => {
+  try {
+    const response = await axios.get(`http://localhost:5001/api/attendance/${rollNo}`);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching attendance by roll number:", error.response?.data || error.message);
+    throw error;
+  }
+};
+
+
+
 // Register user
-export const SignupStudent = async (userData) => {
+export const SignupUser = async (userData) => {
   try {
     const response = await axios.post(`${api.defaults.baseURL}/SignupStudent`, userData, {
       headers: { 'Content-Type': 'application/json' },

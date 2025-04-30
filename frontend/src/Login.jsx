@@ -1,14 +1,14 @@
 import React, { useState } from "react";
 import Food from "./assets/Food.png";
 import "./Login.css";
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from "react-router-dom";
 import { loginUser } from "./api/api.js";
 
 const Login = () => {
   const navigate = useNavigate();
   const [error, setError] = useState("");
 
-  const handleSubmit = async e => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const [emailInput, passwordInput] = e.target.elements;
     const email = emailInput.value.trim();
@@ -18,15 +18,23 @@ const Login = () => {
       const { data } = await loginUser({ email, password });
 
       if (data.success) {
-        // store user in localStorage
-        localStorage.setItem('user', JSON.stringify(data.user));
-        navigate('/LandingPage');
+        // Store user in localStorage
+        localStorage.setItem("user", JSON.stringify(data.user));
+
+        // Redirect based on role
+        if (data.user.role === "Staff") {
+          navigate("/AdminPage");
+        } else if (data.user.role === "Student") {
+          navigate("/LandingPage");
+        } else {
+          setError("Invalid role. Unable to determine destination.");
+        }
       } else {
-        setError(data.message || 'Login failed');
+        setError(data.message || "Login failed");
       }
     } catch (err) {
       console.error(err);
-      setError('Server error — please try again later');
+      setError("Wrong password/email");
     }
   };
 
@@ -47,8 +55,18 @@ const Login = () => {
                       Register Here
                     </Link>
                   </p>
-                  <input className="email1" type="email" placeholder="Email" required />
-                  <input className="password1" type="password" placeholder="Password" required />
+                  <input
+                    className="email1"
+                    type="email"
+                    placeholder="Email"
+                    required
+                  />
+                  <input
+                    className="password1"
+                    type="password"
+                    placeholder="Password"
+                    required
+                  />
                   <div className="text-wrapper-3">Forgot your password?</div>
                   <label className="checkbox">
                     <input type="checkbox" className="tickbox" /> Remember Me
