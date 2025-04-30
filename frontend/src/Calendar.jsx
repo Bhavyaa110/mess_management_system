@@ -128,7 +128,6 @@ const Calendar = () => {
             onChange={(e) => handleManualDateChange(e.target.value, "to")}
           />
         </label>
-        <button>Set Date</button>
       </div>
 
       <button className="confirm">Confirm</button>
