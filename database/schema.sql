@@ -7,7 +7,7 @@ USE mess_management_system;
 CREATE TABLE Users (
     user_id INT AUTO_INCREMENT PRIMARY KEY,
     full_name VARCHAR(100) NOT NULL,
-    roll_no INT UNIQUE NOT NULL,
+    roll_no INT UNIQUE,
     email VARCHAR(100) UNIQUE NOT NULL,
     phone_number VARCHAR(15) UNIQUE,
     password_hash VARCHAR(255) NOT NULL,

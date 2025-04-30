@@ -5,7 +5,6 @@ DELIMITER //
 CREATE PROCEDURE CancelMeals(IN p_user_id INT, IN p_meal_id INT)
 BEGIN
   DECLARE meal_time TIME;
-
   SELECT mt.start_time INTO meal_time
   FROM Meal_Timings mt
   JOIN Meals m ON m.meal_type = mt.meal_type
@@ -71,7 +70,7 @@ BEGIN
 
     -- If attendance is true (present), subtract 50 points
     IF attendance_status = TRUE THEN
-        SET penalty_points = 50;
+        SET penalty_points = penalty_points +50;
     END IF;
 
     -- If the user didn't attend and the ticket is not canceled, subtract 20 points
