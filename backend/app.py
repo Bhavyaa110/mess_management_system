@@ -284,21 +284,37 @@ def today_attendance():
     cursor = conn.cursor()
 
     try:
-        # Join Meals and Attendance tables to group attendance by meal_id
+        # Aggregate attendance for only today's meals
         cursor.execute("""
-            SELECT M.meal_type, COUNT(A.status) AS attendance
+            SELECT 
+                M.meal_type,
+                COUNT(CASE 
+                        WHEN A.scan_time IS NOT NULL 
+                             AND TIME(A.scan_time) BETWEEN MT.start_time AND MT.end_time 
+                        THEN 1 
+                        ELSE NULL 
+                    END) AS attendance
             FROM Meals M
-            LEFT JOIN Attendance A ON M.meal_id = A.meal_id AND A.status = 'present'
+            JOIN Meal_Timings MT ON M.meal_type = MT.meal_type
+            LEFT JOIN Attendance A 
+                ON M.meal_id = A.meal_id 
+                AND DATE(A.scan_time) = CURDATE()
+            WHERE DATE(M.created_at) = CURDATE()  -- Restrict to today's meals
             GROUP BY M.meal_type;
         """)
         attendance = cursor.fetchall()
-
-        # Format the response
-        result = [{"meal_type": row[0], "attendance": row[1]} for row in attendance]
+        
+        # Format the result
+        result = [
+            {"meal_type": row[0], "attendance": row[1]}
+            for row in attendance
+        ]
         return jsonify(result), 200
+
     except Exception as e:
         print("Error fetching today's attendance:", e)
         return jsonify({"error": str(e)}), 500
+
     finally:
         cursor.close()
         conn.close()
