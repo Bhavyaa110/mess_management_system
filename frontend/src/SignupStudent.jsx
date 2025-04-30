@@ -2,9 +2,9 @@ import React, { useState } from "react";
 import Food from "./assets/Food.png";
 import "./SignupStudent.css";
 import { Link, useNavigate } from 'react-router-dom';
-import { SignupStudent } from "./api/api.js";
+import { SignupUser } from "./api/api.js";
 
-const SignupUser = () => {
+const SignupStudent = () => {
   const navigate = useNavigate();
   const [role, setRole] = useState("Student");
   const [form, setForm] = useState({
@@ -12,9 +12,9 @@ const SignupUser = () => {
   });
   const [error, setError] = useState("");
 
-  const handleChange = e => {
-    setForm(f => ({ ...f, [e.target.name]: e.target.value }));
-  };
+  // const handleChange = e => {
+  //   setForm(f => ({ ...f, [e.target.name]: e.target.value }));
+  // };
 
   const handleSubmit = async e => {
     e.preventDefault();
@@ -30,7 +30,7 @@ const SignupUser = () => {
         // convert roll_no to int if needed
         roll_no: parseInt(form.roll_no, 10)
       };
-      const res = await SignupStudent(payload);
+      const res = await SignupUser(payload);
       if (res.data.success) {
         navigate("/Login");
       } else {
@@ -41,6 +41,34 @@ const SignupUser = () => {
       setError(err.response?.data?.message || "Signup failed");
     }
   };
+
+  let x=0
+
+  const handlestudent = () =>{
+    if(x==1){
+      document.getElementById("student").style.backgroundColor="#C3D09A"
+      document.getElementById("student").style.color="#4F622E"
+      document.getElementById("staff").style.backgroundColor="#EFEDE4"
+      document.getElementById("staff").style.color="#4F622E"
+      const input = document.createElement("input");
+      input.id = "rollno";
+      input.type = "text";
+      input.placeholder = "Roll No";
+      input.className = "name";
+      document.getElementById("form1").appendChild(input);
+      x--
+    }
+    
+  }
+  const handlestaff = () =>{
+    document.getElementById("staff").style.backgroundColor="#C3D09A"
+    document.getElementById("staff").style.color="#4F622E"
+    document.getElementById("student").style.backgroundColor="#EFEDE4"
+    document.getElementById("student").style.color="#4F622E"
+    document.getElementById("rollno").remove()
+    x++
+    console.log(x)
+  }
 
   return (
     <div className="container">
@@ -69,7 +97,7 @@ const SignupUser = () => {
           <input className="email" type="email" placeholder="Email" required />
           <input className="password" type="password" placeholder="Password" required />
 
-          <button type="submit" className="submit-btn">
+          <button onClick={handleSubmit} type="submit" className="submit-btn">
             Create Account
           </button>
           <p className="login-link">

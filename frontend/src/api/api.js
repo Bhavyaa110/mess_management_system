@@ -24,7 +24,7 @@ export const loginUser = async (credentials) => {
 
 
 // Register user
-export const SignupStudent = (userData) => {
+export const SignupUser = (userData) => {
   return api.post('/auth/register', userData);
 };
 
