@@ -9,7 +9,8 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 FRONTEND_DIST_DIR = os.path.join(os.path.dirname(BASE_DIR), 'frontend', 'dist')
 
 app = Flask(__name__, static_folder=FRONTEND_DIST_DIR, static_url_path='/')
-CORS(app)
+CORS(app, origins="http://localhost:5173", supports_credentials=True)
+
 
 # --------- Frontend Serving ---------
 @app.route('/')
@@ -210,17 +211,19 @@ def login():
       
 
 # … your existing imports …
-@app.route('/api/auth/register', methods=['POST'])
+@app.route('/api/auth/SignupStudent', methods=['POST'])
 def signup():
     data = request.get_json()
+    print("Received Data:", data)  # Log the incoming request data
+
     required = ['full_name', 'roll_no', 'email', 'phone_number', 'password', 'role', 'hostel']
     if not all(field in data for field in required):
+        print("Missing Fields:", [field for field in required if field not in data])  # Log missing fields
         return jsonify({'success': False, 'message': 'Missing fields'}), 400
 
     conn = get_db_connection()
     cursor = conn.cursor()
     try:
-        # Store plain-text password (insecure, for development only)
         cursor.execute("""
             INSERT INTO Users
               (full_name, roll_no, email, phone_number, password_hash, role, hostel)
@@ -239,7 +242,7 @@ def signup():
 
     except Exception as e:
         conn.rollback()
-        print("Error during registration:", e)  # Log the error for debugging
+        print("Error during registration:", e)  # Log any exceptions
         return jsonify({'success': False, 'message': str(e)}), 400
 
     finally:

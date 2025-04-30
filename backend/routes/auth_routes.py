@@ -4,7 +4,7 @@ import bcrypt
 
 auth_routes = Blueprint('auth', __name__)
 
-@auth_routes.route('/register', methods=['POST'])
+@auth_routes.route('/SignupStudent', methods=['POST'])
 def register():
     data = request.json
     hashed_pw = bcrypt.hashpw(data['password'].encode('utf-8'), bcrypt.gensalt())
