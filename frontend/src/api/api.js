@@ -1,10 +1,10 @@
 // frontend/src/api/api.js
-import axios from 'axios';
+import axios from 'axios'; // Correct way to import axios
 
 // Create an axios instance
 const api = axios.create({
-  baseURL: '/http://localhost:5001/api/auth', 
-  withCredentials: true, 
+  baseURL: 'http://localhost:5001/api/auth', // Fixed base URL
+  withCredentials: true,
 });
 
 // ========== Auth Routes ==========
@@ -12,81 +12,50 @@ const api = axios.create({
 // Login user
 export const loginUser = async (credentials) => {
   try {
-    const response = await axios.post('http://localhost:5001/api/auth/login', credentials, {
+    const response = await axios.post(`${api.defaults.baseURL}/login`, credentials, {
       headers: { 'Content-Type': 'application/json' },
     });
     return response;
   } catch (error) {
-    console.error(error.response.data); // Log backend error for debugging
+    console.error("Error during login:", error.response?.data || error.message);
+    throw error;
+  }
+};
+
+// Register user
+export const SignupStudent = async (userData) => {
+  try {
+    const response = await axios.post(`${api.defaults.baseURL}/SignupStudent`, userData, {
+      headers: { 'Content-Type': 'application/json' },
+    });
+    return response;
+  } catch (error) {
+    console.error("Error during signup:", error.response?.data || error.message);
     throw error;
   }
 };
 
 
-// Register user
-export const SignupStudent = (userData) => {
-  return api.post('/auth/register', userData);
-};
 
 // Logout user
-export const logoutUser = () => {
-  return api.post('/auth/logout');
+export const logoutUser = async () => {
+  try {
+    const response = await api.post('/logout');
+    return response.data;
+  } catch (error) {
+    console.error("Error during logout:", error.response?.data || error.message);
+    throw error;
+  }
 };
 
 // Get current user info
-export const getCurrentUser = () => {
-  return api.get('/auth/user');
+export const getCurrentUser = async () => {
+  try {
+    const response = await api.get('/user');
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching current user:", error.response?.data || error.message);
+    throw error;
+  }
 };
 
-// ========== Attendance Routes ==========
-
-// Mark attendance
-export const markAttendance = (attendanceData) => {
-  return api.post('/attendance/mark', attendanceData);
-};
-
-// Get attendance record
-export const getAttendance = () => {
-  return api.get('/attendance');
-};
-
-// ========== Meal Routes ==========
-
-// Get all meals
-export const getMeals = (day) => {
-  return api.get('/meals', {params: {day}});
-};
-
-// Cancel a meal
-export const cancelMeal = (userData) => {
-  return api.delete('/cancel_meal', userData);
-};
-
-// Book a meal
-export const bookMeal = (mealData) => {
-  return api.post('/meals/book', mealData);
-};
-
-// ========== Ticket Routes ==========
-
-// Create a ticket
-export const createTicket = (ticketData) => {
-  return api.post('/tickets', ticketData);
-};
-
-// Get all tickets
-export const getTickets = () => {
-  return api.get('/tickets');
-};
-
-// View specific ticket
-export const getTicketById = (ticketId) => {
-  return api.get(`/tickets/${ticketId}`);
-};
-
-// Delete a ticket
-export const deleteTicket = (ticketId) => {
-  return api.delete(`/tickets/${ticketId}`);
-};
-
-export default api;
