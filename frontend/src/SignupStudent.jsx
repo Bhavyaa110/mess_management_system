@@ -1,36 +1,52 @@
-import React from "react";
+import React, { useState } from "react";
 import Food from "./assets/Food.png";
 import "./SignupStudent.css";
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { SignupStudent } from "./api/api.js";
 
-export const SignupStudent = () => {
+const SignupUser = () => {
+  const navigate = useNavigate();
+  const [role, setRole] = useState("Student");
+  const [form, setForm] = useState({
+    full_name: "", roll_no: "", email: "", phone_number: "", hostel: "", password: ""
+  });
+  const [error, setError] = useState("");
 
-  let x=0
+  const handleChange = e => {
+    setForm(f => ({ ...f, [e.target.name]: e.target.value }));
+  };
 
-  const handlestudent = () =>{
-    if(x==1){
-      document.getElementById("student").style.backgroundColor="#C3D09A"
-      document.getElementById("student").style.color="#4F622E"
-      document.getElementById("staff").style.backgroundColor="#EFEDE4"
-      document.getElementById("staff").style.color="#4F622E"
-      const input = document.createElement("input");
-      input.id = "rollno";
-      input.type = "text";
-      input.placeholder = "Roll No";
-      input.className = "name";
-      document.getElementById("form1").appendChild(input);
-      x--
+  const handleSubmit = async e => {
+    e.preventDefault();
+    try {
+      // If student, ensure roll_no non-empty
+      if (role === "Student" && !form.roll_no) {
+        setError("Roll number is required for students");
+        return;
+      }
+      const payload = {
+        ...form,
+        role,
+        // convert roll_no to int if needed
+        roll_no: parseInt(form.roll_no, 10)
+      };
+      const res = await SignupStudent(payload);
+      if (res.data.success) {
+        navigate("/Login");
+      } else {
+        setError(res.data.message);
+      }
+    } catch (err) {
+      console.error(err);
+      setError(err.response?.data?.message || "Signup failed");
     }
-    
-  }
-  const handlestaff = () =>{
-    document.getElementById("staff").style.backgroundColor="#C3D09A"
-    document.getElementById("staff").style.color="#4F622E"
-    document.getElementById("student").style.backgroundColor="#EFEDE4"
-    document.getElementById("student").style.color="#4F622E"
-    document.getElementById("rollno").remove()
-    x++
-  }
+const handleStaff = () => {
+  document.getElementById("staff").style.backgroundColor="#C3D09A";
+  document.getElementById("staff").style.color="#4F622E";
+  document.getElementById("student").style.backgroundColor="#EFEDE4";
+  document.getElementById("student").style.color="#4F622E";
+  document.getElementById("rollno").remove();
+};
   return (
     <div className="container">
       <div className="image-section">

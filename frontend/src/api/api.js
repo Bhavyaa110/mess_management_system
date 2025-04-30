@@ -1,22 +1,21 @@
 // frontend/src/api/api.js
-
 import axios from 'axios';
 
 // Create an axios instance
 const api = axios.create({
-  baseURL: '/api', 
+  baseURL: '/http://localhost:5001/api/auth', 
   withCredentials: true, 
 });
 
 // ========== Auth Routes ==========
 
 // Login user
-export const loginUser = (credentials) => {
-  return api.post('/auth/login', credentials);
+export const loginUser = async (credentials) => {
+  return await axios.post('http://localhost:5001/api/auth/login', credentials);
 };
 
 // Register user
-export const registerUser = (userData) => {
+export const SignupStudent = (userData) => {
   return api.post('/auth/register', userData);
 };
 
