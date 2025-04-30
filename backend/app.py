@@ -166,45 +166,61 @@ import bcrypt  # Add this import at the top
 @app.route('/api/auth/login', methods=['POST'])
 def login():
     data = request.get_json()
+
     conn = get_db_connection()
     cursor = conn.cursor()
+
     try:
+        # Fetch user details based on email
         cursor.execute(
-          "SELECT user_id, full_name, roll_no, email, phone_number, role, hostel, password_hash "
-          "FROM Users WHERE email=%s", (data['email'],)
+            "SELECT user_id, full_name, roll_no, email, phone_number, role, hostel, password_hash "
+            "FROM Users WHERE email=%s", (data.get('email'),)
         )
         row = cursor.fetchone()
-        if row and bcrypt.checkpw(data['password'].encode(), row[7].encode()):
-            user = {
-              "user_id": row[0],
-              "full_name": row[1],
-              "roll_no": row[2],
-              "email": row[3],
-              "phone_number": row[4],
-              "role": row[5],
-              "hostel": row[6]
-            }
-            return jsonify({ "success": True, "user": user }), 200
+
+        if row:
+            print("User found:", row)  # Debugging log
         else:
-            return jsonify({ "success": False, "message": "Invalid credentials" }), 401
+            print("User not found for email:", data.get('email'))
+            return jsonify({"success": False, "message": "Invalid credentials"}), 401
+
+        # Compare passwords (plain-text for testing purposes only)
+        if data.get('password') == row[7]:  # row[7] = password_hash column
+            user = {
+                "user_id": row[0],
+                "full_name": row[1],
+                "roll_no": row[2],
+                "email": row[3],
+                "phone_number": row[4],
+                "role": row[5],
+                "hostel": row[6]
+            }
+            return jsonify({"success": True, "user": user}), 200
+        else:
+            print("Password mismatch for email:", data.get('email'))
+            return jsonify({"success": False, "message": "Invalid credentials"}), 401
+    except Exception as e:
+        print("Error during login:", e)  # Log any exceptions
+        return jsonify({"success": False, "message": "Internal Server Error"}), 500
     finally:
-        cursor.close(); conn.close()
+        cursor.close()
+        conn.close()
+
+
+      
 
 # … your existing imports …
-
 @app.route('/api/auth/register', methods=['POST'])
 def signup():
     data = request.get_json()
-    required = ['full_name','roll_no','email','phone_number','password','role','hostel']
+    required = ['full_name', 'roll_no', 'email', 'phone_number', 'password', 'role', 'hostel']
     if not all(field in data for field in required):
-        return jsonify({'success':False,'message':'Missing fields'}), 400
-
-    # hash password
-    pw_hash = bcrypt.hashpw(data['password'].encode('utf-8'), bcrypt.gensalt()).decode()
+        return jsonify({'success': False, 'message': 'Missing fields'}), 400
 
     conn = get_db_connection()
     cursor = conn.cursor()
     try:
+        # Store plain-text password (insecure, for development only)
         cursor.execute("""
             INSERT INTO Users
               (full_name, roll_no, email, phone_number, password_hash, role, hostel)
@@ -214,21 +230,22 @@ def signup():
             data['roll_no'],
             data['email'],
             data['phone_number'],
-            pw_hash,
+            data['password'],  # Store password as plain text
             data['role'],
             data['hostel']
         ))
         conn.commit()
-        return jsonify({'success':True, 'message':'User registered'}), 201
+        return jsonify({'success': True, 'message': 'User registered'}), 201
 
     except Exception as e:
         conn.rollback()
-        # duplicate-key or other error
-        return jsonify({'success':False,'message':str(e)}), 400
+        print("Error during registration:", e)  # Log the error for debugging
+        return jsonify({'success': False, 'message': str(e)}), 400
 
     finally:
         cursor.close()
         conn.close()
+
 
 
 # --------- App Run ---------

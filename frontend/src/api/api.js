@@ -11,8 +11,17 @@ const api = axios.create({
 
 // Login user
 export const loginUser = async (credentials) => {
-  return await axios.post('http://localhost:5001/api/auth/login', credentials);
+  try {
+    const response = await axios.post('http://localhost:5001/api/auth/login', credentials, {
+      headers: { 'Content-Type': 'application/json' },
+    });
+    return response;
+  } catch (error) {
+    console.error(error.response.data); // Log backend error for debugging
+    throw error;
+  }
 };
+
 
 // Register user
 export const SignupStudent = (userData) => {

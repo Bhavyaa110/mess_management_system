@@ -40,13 +40,8 @@ const SignupUser = () => {
       console.error(err);
       setError(err.response?.data?.message || "Signup failed");
     }
-const handleStaff = () => {
-  document.getElementById("staff").style.backgroundColor="#C3D09A";
-  document.getElementById("staff").style.color="#4F622E";
-  document.getElementById("student").style.backgroundColor="#EFEDE4";
-  document.getElementById("student").style.color="#4F622E";
-  document.getElementById("rollno").remove();
-};
+  };
+
   return (
     <div className="container">
       <div className="image-section">
