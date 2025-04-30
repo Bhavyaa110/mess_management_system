@@ -7,6 +7,7 @@ import Logo from "./assets/Logo.png";
 import Wallet from "./assets/Wallet.png"
 import Meals from "./assets/Meals.svg"
 import Ticket from "./assets/Ticket.png"
+import Calendar from "./Calendar";
 
 const LandingPage = () => {
   const SidebarIcon = ({ icon }) => <div className="icon-button">{icon}</div>;
@@ -49,7 +50,34 @@ const LandingPage = () => {
           </div>
         </div>
         <div className="bottompart">
-          <div className="part1"></div>
+          <div className="part1">
+            <div className="part1up">
+              <div className="breakfast">
+                Breakfast
+                <div className="buttons">
+                  <button>Cancel</button>
+                  <button>Add To Cart</button>
+                </div>
+              </div>
+              <div className="breakfast">
+                Lunch
+                <div className="buttons">
+                  <button>Cancel</button>
+                  <button>Add To Cart</button>
+                </div>
+              </div>
+              <div className="breakfast">
+                Dinner
+                <div className="buttons">
+                  <button>Cancel</button>
+                  <button>Add To Cart</button>
+                </div>
+              </div>
+            </div>
+            <div className="calendar">
+              <Calendar />
+            </div>
+          </div>
           <div className="part2">
             <div className="part2up">
               <div className="box1">
@@ -74,7 +102,7 @@ const LandingPage = () => {
             <div className="part2down">
               <div className="menu">
                 <p>Menu for the week</p>
-                <h2 className="calendar-month">{today.format('MMMM YYYY')}</h2>
+                <h2 className="calendar-month">{today.format("MMMM YYYY")}</h2>
                 <div className="calendar-scroll" ref={scrollRef}>
                   <div className="calendar-row">
                     {dates.map((date) => {
@@ -92,7 +120,9 @@ const LandingPage = () => {
                     })}
                   </div>
                 </div>
-                <div className="breakfast"><p>Breakfast</p></div>
+                <div className="menulist">
+                  <p>Menu</p>
+                </div>
               </div>
             </div>
           </div>
