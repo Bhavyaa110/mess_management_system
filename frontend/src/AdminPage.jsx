@@ -95,51 +95,51 @@ const AdminPage = () => {
                 <p>Total Meals: {dashboardData.total_meals}</p>
               </div>
             )}
-          </div>
+         </div>
 
-          <div className="today-attendance">
-            <h2>Today's Attendance</h2>
-              <ul>
-          {todayAttendance.length > 0 ? (
-                    todayAttendance.map((meal) => (
-              <li key={meal.meal_id}>
-                        {meal.meal_type}: {meal.present ? "Present" : "Absent"}
-             </li>
-           ))
-          ) : (
-            <li>No attendance records found for today.</li>
-          )}
-         </ul>
-        </div>
-
-
-
-          <div className="search-attendance">
-            <h2>Search Attendance by Roll Number</h2>
-            <div className="search-bar">
-              <input
-                type="text"
-                placeholder="Enter Roll Number"
-                value={searchRollNo}
-                onChange={(e) => setSearchRollNo(e.target.value)}
-              />
-              <button onClick={handleSearch}>
-                <Search className="search-icon" /> Search
-              </button>
-            </div>
-            {searchedAttendance && (
-              <div className="searched-attendance">
-                <p>Roll Number: {searchedAttendance.roll_no}</p>
+                        <div className="today-attendance">
+                <h2>Today's Attendance</h2>
                 <ul>
-                  {searchedAttendance.details.map((detail, index) => (
-                    <li key={index}>
-                      {Object.keys(detail)[0]}: {Object.values(detail)[0]}
-                    </li>
-                  ))}
+                    {todayAttendance.length > 0 ? (
+                    todayAttendance.map((meal) => (
+                        <li key={meal.meal_type}>
+                        {meal.meal_type}: {meal.attendance} attended
+                        </li>
+                    ))
+                    ) : (
+                    <li>No attendance records for today.</li>
+                    )}
                 </ul>
-              </div>
-            )}
-          </div>
+                </div>
+
+
+                <div className="search-attendance">
+                <h2>Search Attendance by Roll Number</h2>
+                <div className="search-bar">
+                    <input
+                    type="text"
+                    placeholder="Enter Roll Number"
+                    value={searchRollNo}
+                    onChange={(e) => setSearchRollNo(e.target.value)}
+                    />
+                    <button onClick={handleSearch}>
+                    <Search className="search-icon" /> Search
+                    </button>
+                </div>
+                {searchedAttendance && (
+                    <div className="searched-attendance">
+                    <p>Roll Number: {searchedAttendance.roll_no}</p>
+                    <ul>
+                        {searchedAttendance.details.map((detail, index) => (
+                        <li key={index}>
+                            {detail.meal_date} - {detail.meal_type}: {detail.status}
+                        </li>
+                        ))}
+                    </ul>
+                    </div>
+                )}
+                </div>
+
         </div>
       </div>
     </div>
