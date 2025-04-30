@@ -84,20 +84,33 @@ const AdminPage = () => {
         </div>
 
         <div className="bottompart">
-          <div className="dashboard">
-            <h2>Dashboard Overview</h2>
-            {error ? (
-              <div className="error-message">{error}</div>
-            ) : (
-              <div className="dashboard-data">
-                <p>Total Students: {dashboardData.total_students}</p>
-                <p>Total Staff: {dashboardData.total_staff}</p>
-                <p>Total Meals: {dashboardData.total_meals}</p>
-              </div>
-            )}
-         </div>
+        <div className="dashboard">
+        <h2>Dashboard Overview</h2>
+        {error ? (
+            <div className="error-message">{error}</div>
+        ) : (
+            <ul className="dashboard-data">
+            <li>
+                <p>
+                Total Students: {dashboardData.total_students}
+                </p>
+            </li>
+            <li>
+                <p>
+                Total Staff: {dashboardData.total_staff}
+                </p>
+            </li>
+            <li>
+                <p>
+                Total Meals: {dashboardData.total_meals}
+                </p>
+            </li>
+            </ul>
+        )}
+        </div>
 
-                        <div className="today-attendance">
+
+            <div className="today-attendance">
                 <h2>Today's Attendance</h2>
                 <ul>
                     {todayAttendance.length > 0 ? (
@@ -108,37 +121,39 @@ const AdminPage = () => {
                     ))
                     ) : (
                     <li>No attendance records for today.</li>
-                    )}
-                </ul>
+                 )}
+            </ul>
                 </div>
 
 
                 <div className="search-attendance">
-                <h2>Search Attendance by Roll Number</h2>
-                <div className="search-bar">
-                    <input
-                    type="text"
-                    placeholder="Enter Roll Number"
-                    value={searchRollNo}
-                    onChange={(e) => setSearchRollNo(e.target.value)}
-                    />
-                    <button onClick={handleSearch}>
-                    <Search className="search-icon" /> Search
-                    </button>
-                </div>
-                {searchedAttendance && (
-                    <div className="searched-attendance">
-                    <p>Roll Number: {searchedAttendance.roll_no}</p>
-                    <ul>
-                        {searchedAttendance.details.map((detail, index) => (
-                        <li key={index}>
-                            {detail.meal_date} - {detail.meal_type}: {detail.status}
-                        </li>
-                        ))}
-                    </ul>
+                    <h2>Search Attendance by Roll Number</h2>
+                    <div className="search-bar">
+                        <input
+                        type="text"
+                        placeholder="Enter Roll Number"
+                        value={searchRollNo}
+                        onChange={(e) => setSearchRollNo(e.target.value)}
+                        />
+                        <button onClick={handleSearch}>
+                        <Search className="search-icon" /> Search
+                        </button>
                     </div>
-                )}
-                </div>
+                    {searchedAttendance && (
+                        <div className="searched-attendance">
+                        <p>Roll Number: {searchedAttendance.roll_no}</p>
+                        <ul>
+                            {searchedAttendance.details.map((detail, index) => (
+                            <li key={index}>
+                                {detail.meal_date} - {detail.meal_type}: {detail.status}
+                            </li>
+                            ))}
+                        </ul>
+                        </div>
+                    )}
+                    </div>
+
+
 
         </div>
       </div>
