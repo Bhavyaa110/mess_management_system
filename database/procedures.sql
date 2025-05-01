@@ -14,6 +14,7 @@ CREATE PROCEDURE CancelMealProcedure (
     IN meal_type VARCHAR(20)
 )
 BEGIN
+
     DECLARE meal_id INT;
     DECLARE start_time TIME;
     DECLARE now_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
@@ -62,7 +63,22 @@ BEGIN
 END ;
 
 call `CancelMealProcedure`( 3,'breakfast');
+=======
+  DECLARE meal_time TIME;
+  SELECT mt.start_time INTO meal_time
+  FROM Meal_Timings mt
+  JOIN Meals m ON m.meal_type = mt.meal_type
+  WHERE m.meal_id = p_meal_id;
 
+  IF TIMESTAMPDIFF(MINUTE, NOW(), CONCAT(CURDATE(), ' ', meal_time)) < 120 THEN
+    SIGNAL SQLSTATE '45000'
+    SET MESSAGE_TEXT = 'Cannot cancel within 2 hours of meal time.';
+  ELSE
+    UPDATE Tickets SET status = 'Cancelled'
+    WHERE user_id = p_user_id AND meal_id = p_meal_id;
+  END IF;
+END;
+//
 DELIMITER ;
  
 
@@ -114,7 +130,7 @@ BEGIN
 
     -- If attendance is true (present), subtract 50 points
     IF attendance_status = TRUE THEN
-        SET penalty_points = 50;
+        SET penalty_points = penalty_points +50;
     END IF;
 
     -- If the user didn't attend and the ticket is not canceled, subtract 20 points
