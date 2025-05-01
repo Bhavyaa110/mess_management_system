@@ -3,6 +3,7 @@ import mysql.connector
 from flask_cors import CORS
 import os
 from backend.db_config import get_db_connection
+from datetime import datetime
 
 # --------- App Setup ---------
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -11,6 +12,42 @@ FRONTEND_DIST_DIR = os.path.join(os.path.dirname(BASE_DIR), 'frontend', 'dist')
 app = Flask(__name__, static_folder=FRONTEND_DIST_DIR, static_url_path='/')
 CORS(app, origins="http://localhost:5173", supports_credentials=True)
 
+def auto_mark_present():
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor(dictionary=True)
+
+        now = datetime.now()
+        two_hours_from_now = now + timedelta(hours=2)
+
+        # Fetch meals starting in the next 2 hours
+        cursor.execute("""
+            SELECT meal_id
+            FROM Meals M
+            JOIN Meal_Timings T ON M.meal_type = T.meal_type
+            WHERE TIME(T.start_time) BETWEEN %s AND %s
+        """, (now.time(), two_hours_from_now.time()))
+        meals = cursor.fetchall()
+
+        for meal in meals:
+            meal_id = meal['meal_id']
+
+            # Auto-mark users with tickets but not cancelled as "present"
+            cursor.execute("""
+                INSERT INTO Attendance (user_id, meal_id, status, scan_time)
+                SELECT user_id, %s, 'present', CURRENT_TIMESTAMP
+                FROM Tickets
+                WHERE meal_id = %s AND status != 'Cancelled'
+                ON DUPLICATE KEY UPDATE status = 'present', scan_time = CURRENT_TIMESTAMP
+            """, (meal_id, meal_id))
+            conn.commit()
+
+        print("Auto-mark present completed for meals starting soon.")
+    except Exception as e:
+        print("Error in auto-mark present:", e)
+    finally:
+        if conn:
+            conn.close()
 
 # --------- Frontend Serving ---------
 @app.route('/')
@@ -47,25 +84,69 @@ def get_meals_by_day():
 
 @app.route('/api/cancel_meal', methods=['POST'])
 def cancel_meal():
-    data = request.get_json()
-    user_id = data.get('user_id')
-    meal_id = data.get('meal_id')
-
-    conn = get_db_connection()
-    cursor = conn.cursor()
-
     try:
-        cursor.callproc('CancelMeals', [user_id, meal_id])
-        conn.commit()
-        response = {'success': True, 'message': 'Meal cancelled successfully.'}
-    except mysql.connector.Error as err:
-        conn.rollback()
-        response = {'success': False, 'error': str(err)}
-    finally:
-        cursor.close()
-        conn.close()
+        conn = get_db_connection()
+        cursor = conn.cursor(dictionary=True)
 
-    return jsonify(response)
+        # Extract data from the POST request
+        data = request.get_json()
+        user_id = data['user_id']
+        meal_type = data['meal_type']
+
+        # Call the stored procedure
+        cursor.callproc('CancelMealProcedure', [user_id, meal_type])
+
+        # Initialize response to avoid scope issues
+        response = None
+
+        # Fetch results from the procedure
+        for result in cursor.stored_results():
+            response = result.fetchone()
+
+        # Ensure the response data is correctly formatted
+        if response:
+            if 'message' in response:
+                return jsonify({'message': response['message']}), 200
+            elif 'error_message' in response:
+                return jsonify({'error': response['error_message']}), 400
+
+        # Generic fallback in case of unexpected result
+        return jsonify({'error': 'Unexpected response from procedure.'}), 500
+
+    except Exception as e:
+        print("Error cancelling meal:", e)  # Log the error
+        return jsonify({'error': str(e)}), 500
+
+    finally:
+        if conn:
+            conn.close()
+
+
+@app.route('/api/meal_timings', methods=['GET'])
+def get_meal_timings():
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor(dictionary=True)
+
+        # Fetch all meal timings
+        cursor.execute("SELECT * FROM Meal_Timings")
+        timings = cursor.fetchall()
+
+        # Convert timing fields to string format
+        for timing in timings:
+            timing["start_time"] = str(timing["start_time"])  # Convert to string
+            timing["end_time"] = str(timing["end_time"])      # Convert to string
+
+        return jsonify(timings)  # Return the modified result
+    except Exception as e:
+        print("Error fetching meal timings:", e)
+        return jsonify({"error": str(e)}), 500
+    finally:
+        if conn:
+            conn.close()
+
+
+
 @app.route('/api/mark_attendance', methods=['POST'])
 def mark_attendance():
     data = request.get_json()
@@ -161,8 +242,6 @@ def get_user_status():
    
 
 
-import bcrypt  # Add this import at the top
-
 # Add these routes directly in app.py
 @app.route('/api/auth/login', methods=['POST'])
 def login():
@@ -208,17 +287,15 @@ def login():
         conn.close()
 
 
-      
-
 # … your existing imports …
 @app.route('/api/auth/SignupStudent', methods=['POST'])
 def signup():
     data = request.get_json()
-    print("Received Data:", data)  # Log the incoming request data
+    print("Received Data:", data)  
 
     required = ['full_name', 'roll_no', 'email', 'phone_number', 'password', 'role', 'hostel']
     if not all(field in data for field in required):
-        print("Missing Fields:", [field for field in required if field not in data])  # Log missing fields
+        print("Missing Fields:", [field for field in required if field not in data])  
         return jsonify({'success': False, 'message': 'Missing fields'}), 400
 
     conn = get_db_connection()
@@ -233,7 +310,7 @@ def signup():
             data['roll_no'],
             data['email'],
             data['phone_number'],
-            data['password'],  # Store password as plain text
+            data['password'],  
             data['role'],
             data['hostel']
         ))
@@ -242,7 +319,7 @@ def signup():
 
     except Exception as e:
         conn.rollback()
-        print("Error during registration:", e)  # Log any exceptions
+        print("Error during registration:", e)  
         return jsonify({'success': False, 'message': str(e)}), 400
 
     finally:
@@ -284,22 +361,23 @@ def today_attendance():
     cursor = conn.cursor()
 
     try:
-        # Aggregate attendance for only today's meals
+        # Use scan_time from Attendance for filtering by today's date
         cursor.execute("""
             SELECT 
                 M.meal_type,
-                COUNT(CASE 
+                COUNT(
+                    CASE 
                         WHEN A.scan_time IS NOT NULL 
                              AND TIME(A.scan_time) BETWEEN MT.start_time AND MT.end_time 
                         THEN 1 
                         ELSE NULL 
-                    END) AS attendance
+                    END
+                ) AS attendance
             FROM Meals M
             JOIN Meal_Timings MT ON M.meal_type = MT.meal_type
             LEFT JOIN Attendance A 
                 ON M.meal_id = A.meal_id 
-                AND DATE(A.scan_time) = CURDATE()
-            WHERE DATE(M.created_at) = CURDATE()  -- Restrict to today's meals
+                AND DATE(A.scan_time) = CURDATE()  -- Use scan_time for today's attendance
             GROUP BY M.meal_type;
         """)
         attendance = cursor.fetchall()
@@ -319,16 +397,18 @@ def today_attendance():
         cursor.close()
         conn.close()
 
-
 @app.route('/api/attendance/<roll_no>', methods=['GET'])
 def attendance_by_roll_no(roll_no):
     conn = get_db_connection()
     cursor = conn.cursor()
 
     try:
-        # Fetch attendance details for a specific roll number
+        # Query to fetch meal_type, date from scan_time, and attendance status for the given roll number
         cursor.execute("""
-            SELECT M.meal_type, A.status
+            SELECT 
+                M.meal_type,
+                DATE(A.scan_time) AS attendance_date,  -- Extract date from scan_time
+                A.status
             FROM Attendance A
             JOIN Meals M ON A.meal_id = M.meal_id
             JOIN Users U ON A.user_id = U.user_id
@@ -336,16 +416,70 @@ def attendance_by_roll_no(roll_no):
         """, (roll_no,))
         attendance = cursor.fetchall()
 
-        # Structure the response
-        result = {"roll_no": roll_no, "details": [{"meal_type": row[0], "status": row[1]} for row in attendance]}
+        # Format the response
+        result = {
+            "roll_no": roll_no,
+            "details": [
+                {
+                    "meal_type": row[0],
+                    "meal_date": row[1],  # Extracted from scan_time
+                    "status": row[2]
+                } for row in attendance
+            ]
+        }
         return jsonify(result), 200
+
     except Exception as e:
         print("Error fetching attendance by roll number:", e)
         return jsonify({"error": str(e)}), 500
+
     finally:
         cursor.close()
         conn.close()
 
+@app.route('/api/user_wallet', methods=['POST'])
+def user_wallet():
+    data = request.get_json()
+    user_id = data.get('user_id')
+    print("Received user_id:", user_id)  # Debugging: Check if user_id is received
+
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    try:
+        # Calculate balance using max_semester_points
+        cursor.execute("""
+            SELECT max_semester_points - IFNULL(SUM(points), 0) AS balance
+            FROM Users U
+            LEFT JOIN Penalties P ON U.user_id = P.user_id
+            WHERE U.user_id = %s
+            GROUP BY U.max_semester_points;
+        """, (user_id,))
+        result = cursor.fetchone()
+        print("Balance query result:", result)  # Debugging
+
+        balance = result[0] if result else 0  # Handle no result
+
+        # Query to fetch penalty points
+        cursor.execute("""
+            SELECT IFNULL(SUM(points), 0) AS total_penalty_points
+            FROM Penalties
+            WHERE user_id = %s;
+        """, (user_id,))
+        penalty_points = cursor.fetchone()[0]
+        print("Penalty points query result:", penalty_points)  # Debugging
+
+        return jsonify({
+            'balance': balance,
+            'penalty_points': penalty_points
+        }), 200
+
+    except Exception as e:
+        print("Error in user_wallet API:", str(e))  # Log the error
+        return jsonify({'error': str(e)}), 500
+
+    finally:
+        cursor.close()
+        conn.close()
 
 
 # --------- App Run ---------

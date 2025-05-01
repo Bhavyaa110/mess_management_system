@@ -20,7 +20,7 @@ const Login = () => {
       if (data.success) {
         // Store user in localStorage
         localStorage.setItem("user", JSON.stringify(data.user));
-
+          
         // Redirect based on role
         if (data.user.role === "Staff") {
           navigate("/AdminPage");

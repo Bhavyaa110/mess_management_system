@@ -152,6 +152,14 @@
   justify-content: center;
   align-items: center;
 }
+.box1, .box2, .box3 p {
+  font-size: 16px; /* Adjust font size */
+  font-weight: bold; /* Make text bold */
+  word-wrap: break-word; /* Ensure text wraps properly */
+  margin: 10; /* Remove unnecessary margins */
+  
+}
+
 .part2down{
 display: flex;
 } 
@@ -233,24 +241,25 @@ display: flex;
   flex-direction: column;
   align-items: center;
   margin-bottom: 30px;
+  justify-content: center;
 }
 .breakfast{
-  width: 70%;
+  width: 99%;
   background-color: #C3D09A;
   height: 80px;
   margin-top: 30px;
   display: flex;
   align-items: center;
-  padding-left: 20px;
+  padding-left: 50px;
   border-radius: 10px;
   font-size: 25px;
-  justify-content: space-between;
+  justify-content: center;
   padding-right: 50px;
 }
 .buttons{
 display: flex;
-justify-content: space-between;
-width: 240px;
+justify-content: right;
+width: 320px;
 }
 .breakfast button{
   background-color: #4F622E;
@@ -260,7 +269,31 @@ width: 240px;
   color: #EFEDE4;
   cursor: pointer;
   font-weight: 400;
-}
-/* .calendar{
+  padding-left: 20px;
 
-} */
+
+}
+.menu-table {
+  width: 80%; /* Center the table with adequate width */
+  margin: -10px auto; /* Center the table horizontally with spacing above */
+  border-collapse: collapse; /* Ensure the borders don't overlap */
+}
+
+.menu-table th, .menu-table td {
+  text-align: center; /* Center-align the text in cells */
+  padding: 12px; /* Add padding for spacing */
+}
+
+.menu-table th {
+  font-weight: bold; /* Bold header text */
+}
+
+.menu-table ol {
+  margin: 0; /* Remove default margin for ordered lists */
+  padding-left: 20px; /* Indent ordered list inside table cells */
+}
+
+.menu-table td {
+  vertical-align: top; /* Align text to the top of the cells */
+}
+ 
