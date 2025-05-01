@@ -243,3 +243,33 @@ WHERE DATE(scan_time) = CURDATE();
 select * from meal_timings;
 
 SELECT start_time FROM Meal_Timings WHERE meal_type = 'Breakfast';
+
+
+SELECT meal_type, menu 
+FROM Meals 
+WHERE day_of_week = 'Monday' 
+ORDER BY FIELD(meal_type, 'Breakfast', 'Lunch', 'Dinner');
+
+
+SELECT meal_id FROM Meals
+            WHERE meal_type = 'Lunch' AND day_of_week = 'Thursday'
+
+SELECT start_time FROM Meal_Timings
+                WHERE meal_type = 'Lunch'
+
+  UPDATE Tickets
+                        SET status = 'Cancelled', purchase_date = CURRENT_TIMESTAMP
+                        WHERE user_id = 1 AND meal_id = 1
+
+SELECT * FROM Meal_Timings
+
+INSERT INTO Penalties (user_id, meal_id, penalty_type, points)
+            VALUES (1, 1, "cancelled", 20)
+
+
+CALL CancelMealProcedure(4, 'Breakfast');
+
+SELECT meal_id, meal_type, day_of_week 
+FROM Meals 
+WHERE meal_type = 'Breakfast' AND day_of_week = 'Thursday';  -- Replace 'Monday' with the current day
+

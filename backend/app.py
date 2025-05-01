@@ -12,6 +12,42 @@ FRONTEND_DIST_DIR = os.path.join(os.path.dirname(BASE_DIR), 'frontend', 'dist')
 app = Flask(__name__, static_folder=FRONTEND_DIST_DIR, static_url_path='/')
 CORS(app, origins="http://localhost:5173", supports_credentials=True)
 
+def auto_mark_present():
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor(dictionary=True)
+
+        now = datetime.now()
+        two_hours_from_now = now + timedelta(hours=2)
+
+        # Fetch meals starting in the next 2 hours
+        cursor.execute("""
+            SELECT meal_id
+            FROM Meals M
+            JOIN Meal_Timings T ON M.meal_type = T.meal_type
+            WHERE TIME(T.start_time) BETWEEN %s AND %s
+        """, (now.time(), two_hours_from_now.time()))
+        meals = cursor.fetchall()
+
+        for meal in meals:
+            meal_id = meal['meal_id']
+
+            # Auto-mark users with tickets but not cancelled as "present"
+            cursor.execute("""
+                INSERT INTO Attendance (user_id, meal_id, status, scan_time)
+                SELECT user_id, %s, 'present', CURRENT_TIMESTAMP
+                FROM Tickets
+                WHERE meal_id = %s AND status != 'Cancelled'
+                ON DUPLICATE KEY UPDATE status = 'present', scan_time = CURRENT_TIMESTAMP
+            """, (meal_id, meal_id))
+            conn.commit()
+
+        print("Auto-mark present completed for meals starting soon.")
+    except Exception as e:
+        print("Error in auto-mark present:", e)
+    finally:
+        if conn:
+            conn.close()
 
 # --------- Frontend Serving ---------
 @app.route('/')
@@ -49,53 +85,38 @@ def get_meals_by_day():
 @app.route('/api/cancel_meal', methods=['POST'])
 def cancel_meal():
     try:
+        conn = get_db_connection()
+        cursor = conn.cursor(dictionary=True)
+
+        # Extract data from the POST request
         data = request.get_json()
         user_id = data['user_id']
         meal_type = data['meal_type']
-        today = datetime.now().strftime('%A')  # Get the current day name
 
-        # Fetch the meal_id for the current day and meal type
-        cursor = conn.cursor(dictionary=True)
-        cursor.execute("""
-            SELECT meal_id FROM Meals
-            WHERE meal_type = %s AND day_of_week = %s
-        """, (meal_type, today))
-        meal = cursor.fetchone()
+        # Call the stored procedure
+        cursor.callproc('CancelMealProcedure', [user_id, meal_type])
 
-        if meal:
-            meal_id = meal['meal_id']
+        # Initialize response to avoid scope issues
+        response = None
 
-            # Fetch meal start time
-            cursor.execute("""
-                SELECT start_time FROM Meal_Timings
-                WHERE meal_type = %s
-            """, (meal_type,))
-            meal_timing = cursor.fetchone()
+        # Fetch results from the procedure
+        for result in cursor.stored_results():
+            response = result.fetchone()
 
-            if meal_timing:
-                start_time = datetime.strptime(meal_timing['start_time'], '%H:%M:%S')
-                now = datetime.now()
-                time_difference = start_time - now
+        # Ensure the response data is correctly formatted
+        if response:
+            if 'message' in response:
+                return jsonify({'message': response['message']}), 200
+            elif 'error_message' in response:
+                return jsonify({'error': response['error_message']}), 400
 
-                # Check if cancellation is allowed (2+ hours before meal start time)
-                if time_difference.total_seconds() > 7200:
-                    # Update ticket status to 'Cancelled'
-                    cursor.execute("""
-                        UPDATE Tickets
-                        SET status = 'Cancelled', purchase_date = CURRENT_TIMESTAMP
-                        WHERE user_id = %s AND meal_id = %s
-                    """, (user_id, meal_id))
-                    conn.commit()
-                    return jsonify({'message': f'{meal_type} meal cancelled successfully!'}), 200
-                else:
-                    return jsonify({'error': 'Cannot cancel meal less than 2 hours before the start time.'}), 400
-            else:
-                return jsonify({'error': 'Meal timing not found.'}), 404
-        else:
-            return jsonify({'error': 'Meal not found for the current day.'}), 404
+        # Generic fallback in case of unexpected result
+        return jsonify({'error': 'Unexpected response from procedure.'}), 500
+
     except Exception as e:
         print("Error cancelling meal:", e)  # Log the error
         return jsonify({'error': str(e)}), 500
+
     finally:
         if conn:
             conn.close()
@@ -270,11 +291,11 @@ def login():
 @app.route('/api/auth/SignupStudent', methods=['POST'])
 def signup():
     data = request.get_json()
-    print("Received Data:", data)  # Log the incoming request data
+    print("Received Data:", data)  
 
     required = ['full_name', 'roll_no', 'email', 'phone_number', 'password', 'role', 'hostel']
     if not all(field in data for field in required):
-        print("Missing Fields:", [field for field in required if field not in data])  # Log missing fields
+        print("Missing Fields:", [field for field in required if field not in data])  
         return jsonify({'success': False, 'message': 'Missing fields'}), 400
 
     conn = get_db_connection()
@@ -289,7 +310,7 @@ def signup():
             data['roll_no'],
             data['email'],
             data['phone_number'],
-            data['password'],  # Store password as plain text
+            data['password'],  
             data['role'],
             data['hostel']
         ))
@@ -298,7 +319,7 @@ def signup():
 
     except Exception as e:
         conn.rollback()
-        print("Error during registration:", e)  # Log any exceptions
+        print("Error during registration:", e)  
         return jsonify({'success': False, 'message': str(e)}), 400
 
     finally:
